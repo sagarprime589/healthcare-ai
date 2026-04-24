@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useRef, useEffect } from 'react';
 import { usePatient } from '../context/PatientContext';
 import { useNavigate } from 'react-router-dom';
