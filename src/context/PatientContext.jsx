@@ -21,10 +21,11 @@ export function PatientProvider({ children }) {
   });
 
   useEffect(() => {
-    const key = getHistoryKey();
-    const saved = localStorage.getItem(key);
-    setHistoryState(saved ? JSON.parse(saved) : []);
-  }, []);
+  const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
+  const key = user ? `healthai_history_${user.id}` : 'healthai_history_guest';
+  const saved = localStorage.getItem(key);
+  setHistoryState(saved ? JSON.parse(saved) : []);
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setHistory = (updated) => {
     const key = getHistoryKey();

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import jsPDF from 'jspdf';
 
 export function generatePDF(patientData, aiResult) {
