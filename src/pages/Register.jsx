@@ -24,8 +24,7 @@ export default function Register() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
+const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/register`, {        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
       });
