@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -178,7 +179,21 @@ Be thorough, practical, and use simple language that a normal Indian patient can
     res.status(500).json({ error: 'Medicine lookup failed' });
   }
 });
-const users = [];
+const fs = require('fs');
+const USERS_FILE = './users.json';
+
+const loadUsers = () => {
+  try {
+    if (fs.existsSync(USERS_FILE)) return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+  } catch { }
+  return [];
+};
+
+const saveUsers = (users) => {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+};
+
+let users = loadUsers();
 
 app.post('/api/register', (req, res) => {
   const { name, email, password } = req.body;
@@ -187,14 +202,86 @@ app.post('/api/register', (req, res) => {
   if (exists) return res.status(400).json({ error: 'Email already registered' });
   const user = { id: Date.now(), name, email, password };
   users.push(user);
+  saveUsers(users);
   res.json({ user: { id: user.id, name: user.name, email: user.email } });
 });
 
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
+  users = loadUsers();
   const user = users.find(u => u.email === email && u.password === password);
   if (!user) return res.status(401).json({ error: 'Invalid email or password' });
   res.json({ user: { id: user.id, name: user.name, email: user.email } });
+});
+
+const otpStore = {};
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+app.post('/api/forgot-password', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  users = loadUsers();
+  const user = users.find(u => u.email === email);
+  if (!user) return res.status(404).json({ error: 'No account found with this email' });
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  otpStore[email] = { otp, expires: Date.now() + 10 * 60 * 1000 };
+
+  transporter.sendMail({
+    from: `"HealthAI" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'HealthAI — Password Reset OTP',
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#f5f7fa;border-radius:12px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="width:48px;height:48px;background:#0f6e56;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;">⚕</div>
+          <h2 style="margin:12px 0 4px;color:#1a1a1a;">Password Reset</h2>
+          <p style="margin:0;color:#888;font-size:14px;">Your HealthAI OTP code</p>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:24px;text-align:center;border:1px solid #e5e7eb;">
+          <p style="margin:0 0 12px;color:#555;font-size:14px;">Use this OTP to reset your password. It expires in <strong>10 minutes</strong>.</p>
+          <div style="font-size:36px;font-weight:700;letter-spacing:10px;color:#0f6e56;padding:16px 0;">${otp}</div>
+          <p style="margin:12px 0 0;color:#aaa;font-size:12px;">If you didn't request this, ignore this email.</p>
+        </div>
+      </div>
+    `,
+  }, (err) => {
+    if (err) {
+      console.error('Mail error:', err);
+      return res.status(500).json({ error: 'Failed to send OTP email. Try again.' });
+    }
+    res.json({ message: 'OTP sent to your email' });
+  });
+});
+
+app.post('/api/reset-password', (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) return res.status(400).json({ error: 'All fields are required' });
+
+  const record = otpStore[email];
+  if (!record) return res.status(400).json({ error: 'No OTP requested for this email' });
+  if (Date.now() > record.expires) {
+    delete otpStore[email];
+    return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
+  }
+  if (record.otp !== otp) return res.status(400).json({ error: 'Incorrect OTP' });
+
+  users = loadUsers();
+  const index = users.findIndex(u => u.email === email);
+  if (index === -1) return res.status(404).json({ error: 'Account not found' });
+
+  users[index].password = newPassword;
+  saveUsers(users);
+  delete otpStore[email];
+  res.json({ message: 'Password reset successfully' });
 });
 
 app.listen(5000, () => console.log('Server running on port 5000'));
