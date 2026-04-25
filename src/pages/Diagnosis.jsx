@@ -1,5 +1,7 @@
 /* eslint-disable */
-import EmergencyAlert from '../components/EmergencyAlert';import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import EmergencyAlert from '../components/EmergencyAlert';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { usePatient } from '../context/PatientContext';
 import { getDiagnosis } from '../services/aiService';
 
