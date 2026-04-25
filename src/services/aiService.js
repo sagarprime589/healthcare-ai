@@ -1,5 +1,5 @@
 export async function getDiagnosis(patientData) {
-  const response = await fetch('http://localhost:5000/api/diagnose', {
+  const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/diagnose`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(patientData),
