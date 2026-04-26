@@ -3,6 +3,49 @@ import { useNavigate } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
+function ChangePassword({ userId }) {
+  const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirm: '' });
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+
+  const handle = async (e) => {
+    e.preventDefault();
+    if (form.newPassword.length < 6) { setErr('New password must be at least 6 characters'); return; }
+    if (form.newPassword !== form.confirm) { setErr('Passwords do not match'); return; }
+    setSaving(true); setErr(''); setMsg('');
+    try {
+      const res = await fetch(`${API}/api/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, currentPassword: form.currentPassword, newPassword: form.newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setMsg('Password changed successfully!');
+      setForm({ currentPassword: '', newPassword: '', confirm: '' });
+    } catch (e) { setErr(e.message); }
+    finally { setSaving(false); }
+  };
+
+  return (
+    <form onSubmit={handle} style={{ ...card, marginTop: '16px' }}>
+      <h2 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '700' }}>Change Password</h2>
+      <p style={{ margin: '0 0 20px', color: '#888', fontSize: '13px' }}>Update your account password</p>
+      {msg && <div style={{ background: '#e1f5ee', border: '1px solid #1d9e75', color: '#0f6e56', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px', fontSize: '13px' }}>✓ {msg}</div>}
+      {err && <div style={{ background: '#fff0f0', border: '1px solid #ffcccc', color: '#cc0000', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px', fontSize: '13px' }}>⚠ {err}</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div><Label>Current Password</Label><Input type="password" value={form.currentPassword} onChange={e => setForm(f => ({ ...f, currentPassword: e.target.value }))} placeholder="Enter current password" required/></div>
+        <div><Label>New Password</Label><Input type="password" value={form.newPassword} onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))} placeholder="Min. 6 characters" required/></div>
+        <div><Label>Confirm New Password</Label><Input type="password" value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter new password" required/></div>
+      </div>
+      <button type="submit" disabled={saving} style={{ ...saveBtn, marginTop: '20px', opacity: saving ? 0.7 : 1 }}>
+        {saving ? 'Changing...' : 'Change Password'}
+      </button>
+    </form>
+  );
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
@@ -132,6 +175,8 @@ export default function Profile() {
             </button>
           </div>
         </form>
+
+        <ChangePassword userId={user?.id} />
 
         {/* Quick actions */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>

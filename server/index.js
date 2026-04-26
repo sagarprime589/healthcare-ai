@@ -150,6 +150,26 @@ app.post('/api/reset-password', async (req, res) => {
   }
 });
 
+// ── Change password ──────────────────────────────────────
+
+app.post('/api/change-password', async (req, res) => {
+  const { userId, currentPassword, newPassword } = req.body;
+  if (!userId || !currentPassword || !newPassword) return res.status(400).json({ error: 'All fields required' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const isHashed = user.password.startsWith('$2');
+    const valid = isHashed ? await bcrypt.compare(currentPassword, user.password) : currentPassword === user.password;
+    if (!valid) return res.status(401).json({ error: 'Current password is incorrect' });
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await User.updateOne({ _id: userId }, { password: hashed });
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
 // ── Profile routes ───────────────────────────────────────
 
 app.get('/api/profile/:userId', async (req, res) => {

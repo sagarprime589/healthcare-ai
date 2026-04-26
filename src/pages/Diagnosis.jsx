@@ -21,6 +21,10 @@ function Diagnosis() {
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
+    // Restore draft from session if exists
+    const draft = sessionStorage.getItem('healthai_draft');
+    if (draft) { try { setForm(JSON.parse(draft)); } catch (_) {} }
+
     const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
     const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     if (user && !user.isGuest) {
@@ -48,24 +52,33 @@ function Diagnosis() {
   }, [location.state]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const updated = { ...form, [e.target.name]: e.target.value };
+    setForm(updated);
+    sessionStorage.setItem('healthai_draft', JSON.stringify(updated));
   };
+
+  const [slowServer, setSlowServer] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSlowServer(false);
+    const slowTimer = setTimeout(() => setSlowServer(true), 8000);
     try {
       const result = await getDiagnosis(form);
       setPatientData(form);
       setAiResult(result);
       saveToHistory(form, result);
+      sessionStorage.removeItem('healthai_draft');
       navigate('/dashboard');
     } catch (err) {
-      setError('Something went wrong. Please check your connection and try again.');
+      setError('Something went wrong. If the server just woke up, wait 30 seconds and try again.');
       console.error(err);
     } finally {
+      clearTimeout(slowTimer);
       setLoading(false);
+      setSlowServer(false);
     }
   };
 
@@ -242,7 +255,7 @@ function Diagnosis() {
                     disabled={loading || !step2Complete}
                     style={{ ...submitBtn, flex: 1, opacity: (loading || !step2Complete) ? 0.7 : 1, cursor: (loading || !step2Complete) ? 'not-allowed' : 'pointer' }}>
                     {loading ? (
-                      <span>Analyzing symptoms... please wait</span>
+                      <span>{slowServer ? '⏳ Server waking up, please wait...' : 'Analyzing symptoms...'}</span>
                     ) : (
                       <span>Get AI Assessment →</span>
                     )}
