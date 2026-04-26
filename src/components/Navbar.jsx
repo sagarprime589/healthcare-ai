@@ -18,6 +18,7 @@ function Navbar() {
     { to: '/diagnosis', label: 'Diagnosis' },
     { to: '/bodymap', label: 'Body Map' },
     { to: '/medicine', label: 'Medicine' },
+    { to: '/vitals', label: 'Vitals' },
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/history', label: 'History' },
   ];

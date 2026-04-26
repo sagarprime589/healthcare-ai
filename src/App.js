@@ -12,6 +12,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './pages/Profile';
+import VitalSigns from './pages/VitalSigns';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -28,7 +30,9 @@ function App() {
         <Route path="/bodymap" element={<ProtectedRoute><BodyMap /></ProtectedRoute>} />
         <Route path="/medicine" element={<ProtectedRoute><MedicineLookup /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/vitals" element={<ProtectedRoute><VitalSigns /></ProtectedRoute>} />
         <Route path="/test" element={<TestAPI />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

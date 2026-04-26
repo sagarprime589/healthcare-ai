@@ -4,11 +4,24 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { error: 'Too many attempts. Please try again in 15 minutes.' } });
+const aiLimiter   = rateLimit({ windowMs: 60 * 1000, max: 10, message: { error: 'Too many AI requests. Please wait a minute.' } });
+const otpLimiter  = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, message: { error: 'Too many OTP requests. Please try again in an hour.' } });
+
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
+app.use('/api/forgot-password', otpLimiter);
+app.use('/api/diagnose', aiLimiter);
+app.use('/api/chat', aiLimiter);
+app.use('/api/medicine', aiLimiter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
