@@ -2,10 +2,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { usePatient } from '../context/PatientContext';
 import { useNavigate } from 'react-router-dom';
+import { useLang } from '../context/LanguageContext';
 
 export default function Chat() {
   const { patientData, aiResult } = usePatient();
   const navigate = useNavigate();
+  const { lang } = useLang();
   const bottomRef = useRef(null);
 
   const [messages, setMessages] = useState([
@@ -41,7 +43,7 @@ export default function Chat() {
       const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ context, history, message: input }),
+        body: JSON.stringify({ context, history, message: input, lang }),
       });
 
       const data = await response.json();

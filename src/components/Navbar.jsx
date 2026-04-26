@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useLang } from '../context/LanguageContext';
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang, toggleLang } = useLang();
 
   const logout = () => {
     localStorage.removeItem('healthai_user');
@@ -46,6 +48,9 @@ function Navbar() {
 
         {/* Desktop user area */}
         <div className="nav-desktop" style={{ ...styles.desktopLinks, gap: '10px' }}>
+          <button onClick={toggleLang} style={langBtn} title="Switch language / भाषा बदलें">
+            {lang === 'en' ? 'हि' : 'EN'}
+          </button>
           {user ? (
             <>
               {user.isGuest ? (
@@ -119,6 +124,13 @@ function Navbar() {
               )}
             </div>
 
+            {/* Language toggle */}
+            <div style={{ padding: '8px 20px', borderTop: '1px solid #e5e7eb' }}>
+              <button onClick={toggleLang} style={{ width: '100%', padding: '10px', background: '#f5f7fa', color: '#0f6e56', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
+                {lang === 'en' ? '🌐 हिंदी में बदलें' : '🌐 Switch to English'}
+              </button>
+            </div>
+
             {/* Auth button */}
             <div style={{ padding: '12px 20px', borderTop: '1px solid #e5e7eb' }}>
               {user ? (
@@ -168,6 +180,12 @@ const avatarStyle = {
   background: 'rgba(255,255,255,0.2)', border: '1.5px solid rgba(255,255,255,0.5)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   fontSize: '13px', fontWeight: '700', color: '#fff',
+};
+
+const langBtn = {
+  padding: '5px 12px', background: 'rgba(255,255,255,0.15)', color: '#fff',
+  border: '1px solid rgba(255,255,255,0.35)', borderRadius: '8px',
+  fontSize: '13px', fontWeight: '700', cursor: 'pointer', letterSpacing: '0.5px',
 };
 
 const loginBtn = {

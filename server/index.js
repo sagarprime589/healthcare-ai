@@ -214,6 +214,9 @@ app.post('/api/profile/:userId', async (req, res) => {
 
 app.post('/api/diagnose', async (req, res) => {
   const patientData = req.body;
+  const langInstruction = patientData.lang === 'hi'
+    ? '\n\nIMPORTANT: Respond entirely in Hindi language using Devanagari script. All section headers, medical terms, explanations, medicine names, and recommendations must be written in Hindi.'
+    : '';
 
   const prompt = `You are an experienced medical AI assistant. A patient has provided the following information:
 - Name: ${patientData.name}
@@ -257,7 +260,7 @@ SEE A DOCTOR IF:
 3. [warning sign]
 
 DISCLAIMER:
-This is an AI-generated assessment and not a substitute for professional medical advice.`;
+This is an AI-generated assessment and not a substitute for professional medical advice.${langInstruction}`;
 
   try {
     const response = await axios.post(
@@ -286,10 +289,13 @@ This is an AI-generated assessment and not a substitute for professional medical
 });
 
 app.post('/api/chat', async (req, res) => {
-  const { context, history, message } = req.body;
+  const { context, history, message, lang } = req.body;
+  const langInstruction = lang === 'hi'
+    ? ' Always respond in Hindi using Devanagari script.'
+    : '';
   try {
     const messages = [
-      { role: 'system', content: context },
+      { role: 'system', content: context + langInstruction },
       ...history,
       { role: 'user', content: message },
     ];
@@ -306,7 +312,10 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.post('/api/medicine', async (req, res) => {
-  const { medicine } = req.body;
+  const { medicine, lang } = req.body;
+  const langInstruction = lang === 'hi'
+    ? '\n\nIMPORTANT: Respond entirely in Hindi using Devanagari script. All section headers, explanations, and medical information must be in Hindi.'
+    : '';
   const prompt = `You are an expert pharmacist and medical professional with complete knowledge of all medicines used in India and worldwide, including branded medicines, generic medicines, Ayurvedic medicines, common Indian pharmacy medicines, OTC medicines, and prescription drugs.
 
 The user is asking about: "${medicine}"
@@ -339,7 +348,7 @@ STORAGE:
 ALTERNATIVES:
 [List Indian brand names, generic alternatives, and similar medicines available in India]
 
-Be thorough, practical, and use simple language that a normal Indian patient can understand.`;
+Be thorough, practical, and use simple language that a normal Indian patient can understand.${langInstruction}`;
 
   try {
     const response = await axios.post(

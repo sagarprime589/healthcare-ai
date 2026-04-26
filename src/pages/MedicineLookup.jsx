@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useLang } from '../context/LanguageContext';
 
 export default function MedicineLookup() {
+  const { lang } = useLang();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export default function MedicineLookup() {
       const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/medicine`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ medicine: query }),
+        body: JSON.stringify({ medicine: query, lang }),
       });
 
       const data = await response.json();

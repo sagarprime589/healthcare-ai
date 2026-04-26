@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { LanguageProvider } from './context/LanguageContext';
 import Home from './pages/Home';
 import Diagnosis from './pages/Diagnosis';
 import Dashboard from './pages/Dashboard';
@@ -17,6 +18,7 @@ import NotFound from './pages/NotFound';
 
 function App() {
   return (
+    <LanguageProvider>
     <BrowserRouter>
       <Navbar />
       <Routes>
@@ -35,6 +37,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </LanguageProvider>
   );
 }
 
