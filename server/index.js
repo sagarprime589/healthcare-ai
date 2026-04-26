@@ -3,6 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
@@ -40,10 +41,12 @@ const transporter = nodemailer.createTransport({
 app.post('/api/register', async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'All fields required' });
+  if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
   try {
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ error: 'Email already registered' });
-    const user = await User.create({ name, email, password });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashed });
     res.json({ user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) {
     res.status(500).json({ error: 'Registration failed' });
@@ -53,8 +56,23 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email, password });
+    const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
+
+    // Support both bcrypt hashes and old plain-text passwords (migration)
+    const isHashed = user.password.startsWith('$2');
+    const valid = isHashed
+      ? await bcrypt.compare(password, user.password)
+      : password === user.password;
+
+    if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
+
+    // Upgrade plain-text password to bcrypt hash on successful login
+    if (!isHashed) {
+      const hashed = await bcrypt.hash(password, 10);
+      await User.updateOne({ _id: user._id }, { password: hashed });
+    }
+
     res.json({ user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });
@@ -114,7 +132,8 @@ app.post('/api/reset-password', async (req, res) => {
   if (record.otp !== otp) return res.status(400).json({ error: 'Incorrect OTP' });
 
   try {
-    const user = await User.findOneAndUpdate({ email }, { password: newPassword });
+    const hashed = await bcrypt.hash(newPassword, 10);
+    const user = await User.findOneAndUpdate({ email }, { password: hashed });
     if (!user) return res.status(404).json({ error: 'Account not found' });
     delete otpStore[email];
     res.json({ message: 'Password reset successfully' });
