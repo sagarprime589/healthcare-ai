@@ -3,30 +3,37 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const FRONT_PARTS = {
-  head:         { label: 'Head & Face',           symptoms: ['Headache', 'Migraine', 'Dizziness', 'Head injury', 'Forehead pain', 'Facial pain'] },
-  eyes:         { label: 'Eyes',                  symptoms: ['Eye pain', 'Blurred vision', 'Red eyes', 'Itchy eyes', 'Watery eyes', 'Light sensitivity'] },
-  nose:         { label: 'Nose & Sinuses',        symptoms: ['Runny nose', 'Blocked nose', 'Sneezing', 'Nosebleed', 'Loss of smell', 'Sinus pain'] },
-  throat:       { label: 'Throat & Neck',         symptoms: ['Sore throat', 'Difficulty swallowing', 'Hoarse voice', 'Neck pain', 'Swollen glands', 'Stiff neck'] },
-  chest:        { label: 'Chest',                 symptoms: ['Chest pain', 'Shortness of breath', 'Cough', 'Palpitations', 'Wheezing', 'Chest tightness'] },
-  leftArm:      { label: 'Left Arm',              symptoms: ['Arm pain', 'Weakness', 'Numbness', 'Swelling', 'Joint pain', 'Tingling'] },
-  rightArm:     { label: 'Right Arm',             symptoms: ['Arm pain', 'Weakness', 'Numbness', 'Swelling', 'Joint pain', 'Tingling'] },
-  abdomen:      { label: 'Abdomen',               symptoms: ['Stomach pain', 'Nausea', 'Vomiting', 'Bloating', 'Indigestion', 'Cramps'] },
-  lowerAbdomen: { label: 'Lower Abdomen & Pelvis',symptoms: ['Lower abdominal pain', 'Cramps', 'Bloating', 'Constipation', 'Diarrhea', 'Pelvic pain'] },
-  leftLeg:      { label: 'Left Leg',              symptoms: ['Leg pain', 'Swelling', 'Cramps', 'Weakness', 'Knee pain', 'Varicose veins'] },
-  rightLeg:     { label: 'Right Leg',             symptoms: ['Leg pain', 'Swelling', 'Cramps', 'Weakness', 'Knee pain', 'Varicose veins'] },
-  leftFoot:     { label: 'Left Foot & Ankle',     symptoms: ['Foot pain', 'Ankle pain', 'Swelling', 'Numbness', 'Heel pain', 'Toe pain'] },
-  rightFoot:    { label: 'Right Foot & Ankle',    symptoms: ['Foot pain', 'Ankle pain', 'Swelling', 'Numbness', 'Heel pain', 'Toe pain'] },
+  head:          { label: 'Head & Face',            symptoms: ['Headache', 'Migraine', 'Dizziness', 'Head injury', 'Forehead pain', 'Facial pain'] },
+  neckThroat:    { label: 'Neck & Throat',          symptoms: ['Sore throat', 'Neck pain', 'Stiff neck', 'Swollen glands', 'Difficulty swallowing', 'Hoarse voice'] },
+  chest:         { label: 'Chest & Pectorals',      symptoms: ['Chest pain', 'Shortness of breath', 'Cough', 'Palpitations', 'Wheezing', 'Chest tightness'] },
+  abdomen:       { label: 'Abdomen & Core',         symptoms: ['Stomach pain', 'Nausea', 'Vomiting', 'Bloating', 'Indigestion', 'Cramps'] },
+  lowerAbdomen:  { label: 'Lower Abdomen & Pelvis', symptoms: ['Lower abdominal pain', 'Pelvic pain', 'Bloating', 'Constipation', 'Diarrhea', 'Groin pain'] },
+  leftShoulder:  { label: 'Left Shoulder',          symptoms: ['Shoulder pain', 'Deltoid pain', 'Stiffness', 'Limited movement', 'Clicking', 'Swelling'] },
+  rightShoulder: { label: 'Right Shoulder',         symptoms: ['Shoulder pain', 'Deltoid pain', 'Stiffness', 'Limited movement', 'Clicking', 'Swelling'] },
+  leftArm:       { label: 'Left Arm (Bicep)',        symptoms: ['Arm pain', 'Bicep pain', 'Weakness', 'Numbness', 'Swelling', 'Tingling'] },
+  rightArm:      { label: 'Right Arm (Bicep)',       symptoms: ['Arm pain', 'Bicep pain', 'Weakness', 'Numbness', 'Swelling', 'Tingling'] },
+  leftForearm:   { label: 'Left Forearm & Hand',    symptoms: ['Forearm pain', 'Wrist pain', 'Hand pain', 'Finger pain', 'Numbness', 'Carpal tunnel'] },
+  rightForearm:  { label: 'Right Forearm & Hand',   symptoms: ['Forearm pain', 'Wrist pain', 'Hand pain', 'Finger pain', 'Numbness', 'Carpal tunnel'] },
+  leftLeg:       { label: 'Left Thigh (Quad)',       symptoms: ['Thigh pain', 'Quad pain', 'Weakness', 'Swelling', 'Cramps', 'Varicose veins'] },
+  rightLeg:      { label: 'Right Thigh (Quad)',      symptoms: ['Thigh pain', 'Quad pain', 'Weakness', 'Swelling', 'Cramps', 'Varicose veins'] },
+  leftKnee:      { label: 'Left Knee',              symptoms: ['Knee pain', 'Swelling', 'Stiffness', 'Clicking', 'Locking', 'Instability'] },
+  rightKnee:     { label: 'Right Knee',             symptoms: ['Knee pain', 'Swelling', 'Stiffness', 'Clicking', 'Locking', 'Instability'] },
+  leftLowerLeg:  { label: 'Left Lower Leg',         symptoms: ['Calf pain', 'Shin splints', 'Cramps', 'Swelling', 'Numbness', 'DVT concern'] },
+  rightLowerLeg: { label: 'Right Lower Leg',        symptoms: ['Calf pain', 'Shin splints', 'Cramps', 'Swelling', 'Numbness', 'DVT concern'] },
+  leftFoot:      { label: 'Left Foot & Ankle',      symptoms: ['Foot pain', 'Ankle pain', 'Swelling', 'Numbness', 'Heel pain', 'Toe pain'] },
+  rightFoot:     { label: 'Right Foot & Ankle',     symptoms: ['Foot pain', 'Ankle pain', 'Swelling', 'Numbness', 'Heel pain', 'Toe pain'] },
 };
 
 const BACK_PARTS = {
-  upperBack:     { label: 'Upper Back & Shoulders', symptoms: ['Upper back pain', 'Shoulder blade pain', 'Muscle stiffness', 'Spasm', 'Posture pain', 'Burning sensation'] },
-  midBack:       { label: 'Mid Back',               symptoms: ['Mid back pain', 'Spine pain', 'Muscle ache', 'Stiffness', 'Rib pain', 'Nerve pain'] },
+  headBack:      { label: 'Head & Neck (Back)',      symptoms: ['Occipital headache', 'Neck stiffness', 'Cervical pain', 'Tension headache', 'Neck spasm', 'Radiating pain'] },
+  trapezius:     { label: 'Trapezius & Upper Back',  symptoms: ['Trap pain', 'Shoulder blade pain', 'Muscle tension', 'Stiffness', 'Burning pain', 'Spasm'] },
+  midBack:       { label: 'Mid Back (Lats)',         symptoms: ['Mid back pain', 'Lat pain', 'Muscle ache', 'Stiffness', 'Rib pain', 'Nerve pain'] },
   lowerBack:     { label: 'Lower Back',             symptoms: ['Lower back pain', 'Sciatica', 'Disc pain', 'Stiffness', 'Radiating pain', 'Muscle spasm'] },
-  leftShoulder:  { label: 'Left Shoulder',          symptoms: ['Shoulder pain', 'Rotator cuff pain', 'Stiffness', 'Limited movement', 'Clicking sound', 'Swelling'] },
-  rightShoulder: { label: 'Right Shoulder',         symptoms: ['Shoulder pain', 'Rotator cuff pain', 'Stiffness', 'Limited movement', 'Clicking sound', 'Swelling'] },
-  buttocks:      { label: 'Buttocks & Hips',        symptoms: ['Hip pain', 'Buttock pain', 'Sciatica', 'Pain while sitting', 'Hip stiffness', 'Numbness'] },
-  leftBackLeg:   { label: 'Left Leg (Back)',         symptoms: ['Hamstring pain', 'Calf pain', 'Cramps', 'Sciatica', 'Swelling', 'Varicose veins'] },
-  rightBackLeg:  { label: 'Right Leg (Back)',        symptoms: ['Hamstring pain', 'Calf pain', 'Cramps', 'Sciatica', 'Swelling', 'Varicose veins'] },
+  leftShoulder:  { label: 'Left Shoulder (Back)',   symptoms: ['Shoulder pain', 'Rotator cuff pain', 'Stiffness', 'Limited movement', 'Clicking', 'Swelling'] },
+  rightShoulder: { label: 'Right Shoulder (Back)',  symptoms: ['Shoulder pain', 'Rotator cuff pain', 'Stiffness', 'Limited movement', 'Clicking', 'Swelling'] },
+  buttocks:      { label: 'Gluteus & Hips',         symptoms: ['Hip pain', 'Gluteus pain', 'Sciatica', 'Pain while sitting', 'Hip stiffness', 'Piriformis pain'] },
+  leftBackLeg:   { label: 'Left Leg (Hamstring)',   symptoms: ['Hamstring pain', 'Calf cramp', 'Sciatica', 'Swelling', 'Tightness', 'Bicep femoris pain'] },
+  rightBackLeg:  { label: 'Right Leg (Hamstring)',  symptoms: ['Hamstring pain', 'Calf cramp', 'Sciatica', 'Swelling', 'Tightness', 'Bicep femoris pain'] },
 };
 
 export default function BodyMap() {
@@ -37,154 +44,145 @@ export default function BodyMap() {
 
   const currentParts = view === 'front' ? FRONT_PARTS : BACK_PARTS;
 
-  const toggleSymptom = (symptom) => {
-    setAllSymptoms(prev =>
-      prev.includes(symptom) ? prev.filter(s => s !== symptom) : [...prev, symptom]
-    );
-  };
+  const toggleSymptom = (s) =>
+    setAllSymptoms(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
 
   const hasSymptoms = (key) => currentParts[key]?.symptoms.some(s => allSymptoms.includes(s));
   const isActive = (key) => selected === key;
-
   const handlePartClick = (key) => setSelected(key === selected ? null : key);
+
+  const hs = (key) => ({
+    fill: isActive(key) ? 'rgba(15,110,86,0.52)' : hasSymptoms(key) ? 'rgba(29,158,117,0.30)' : 'rgba(255,255,255,0.01)',
+    stroke: isActive(key) ? '#0f6e56' : hasSymptoms(key) ? '#1d9e75' : 'transparent',
+    strokeWidth: isActive(key) ? 2.2 : 1.4,
+    cursor: 'pointer',
+    transition: 'all 0.18s',
+  });
 
   const handleProceed = () => {
     if (allSymptoms.length === 0) return;
     navigate('/diagnosis', { state: { symptoms: allSymptoms.join(', ') } });
   };
 
-  const getHotspotStyle = (key) => ({
-    fill: isActive(key) ? 'rgba(15,110,86,0.55)' : hasSymptoms(key) ? 'rgba(29,158,117,0.30)' : 'rgba(255,255,255,0.02)',
-    stroke: isActive(key) ? '#0f6e56' : hasSymptoms(key) ? '#1d9e75' : 'rgba(180,180,180,0.25)',
-    strokeWidth: isActive(key) ? 1.8 : 1,
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-  });
-
   return (
-    <div style={{ maxWidth: '980px', margin: '0 auto', padding: '32px 20px' }}>
-
-      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+    <div style={{ maxWidth: '1020px', margin: '0 auto', padding: '28px 20px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         <h2 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '700' }}>Body Map Symptom Checker</h2>
-        <p style={{ color: '#888', fontSize: '14px', margin: 0 }}>
-          Click on a body part to select your symptoms, then proceed to AI diagnosis
-        </p>
+        <p style={{ color: '#888', fontSize: '14px', margin: 0 }}>Click a body region to select your symptoms, then proceed to AI diagnosis</p>
       </div>
 
-      {/* Front / Back toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '28px' }}>
-        <div style={{ background: '#f1f5f9', borderRadius: '12px', padding: '4px', display: 'inline-flex', gap: '2px' }}>
-          {['front', 'back'].map(v => (
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+        <div style={{ background: '#f0f0f0', borderRadius: '12px', padding: '4px', display: 'inline-flex', gap: '2px' }}>
+          {[{ v: 'front', label: 'Front View' }, { v: 'back', label: 'Back View' }].map(({ v, label }) => (
             <button key={v} onClick={() => { setView(v); setSelected(null); }} style={{
-              padding: '9px 28px', borderRadius: '9px', border: 'none',
-              fontSize: '14px', fontWeight: '500', cursor: 'pointer',
+              padding: '9px 30px', borderRadius: '9px', border: 'none',
+              fontSize: '14px', fontWeight: '600', cursor: 'pointer',
               background: view === v ? '#0f6e56' : 'transparent',
-              color: view === v ? '#fff' : '#666',
-              transition: 'all 0.2s',
-            }}>
-              {v === 'front' ? '🫁 Front View' : '🦴 Back View'}
-            </button>
+              color: view === v ? '#fff' : '#666', transition: 'all 0.2s',
+            }}>{label}</button>
           ))}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '28px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px', alignItems: 'start' }}>
 
-        {/* ── SVG Body ── */}
+        {/* SVG Body Panel */}
         <div style={{
-          background: 'linear-gradient(160deg, #eef6f2 0%, #f8fafc 60%, #e8f0ee 100%)',
-          borderRadius: '20px', border: '1px solid #dde8e4',
-          padding: '20px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+          background: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)',
+          borderRadius: '20px', padding: '18px 10px 14px',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.07)',
         }}>
-          <svg viewBox="0 0 200 520" width="100%" style={{ maxWidth: '220px' }}>
+          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+            {view === 'front' ? 'Anterior View' : 'Posterior View'}
+          </p>
+
+          <svg viewBox="0 0 200 555" width="100%" style={{ maxWidth: '230px' }}>
             <defs>
-              <radialGradient id="skinHead" cx="44%" cy="36%" r="62%">
-                <stop offset="0%" stopColor="#FDDDBF"/>
-                <stop offset="55%" stopColor="#F0B98D"/>
-                <stop offset="100%" stopColor="#C98B68"/>
+              <radialGradient id="gMuscle" cx="48%" cy="32%" r="68%">
+                <stop offset="0%" stopColor="#E87848"/>
+                <stop offset="40%" stopColor="#C85030"/>
+                <stop offset="100%" stopColor="#7A2010"/>
               </radialGradient>
-              <radialGradient id="skinTorso" cx="50%" cy="25%" r="68%">
-                <stop offset="0%" stopColor="#FDDDBF"/>
-                <stop offset="60%" stopColor="#F0B98D"/>
-                <stop offset="100%" stopColor="#C4896A"/>
+              <radialGradient id="gHead" cx="44%" cy="34%" r="60%">
+                <stop offset="0%" stopColor="#EDB080"/>
+                <stop offset="55%" stopColor="#D48050"/>
+                <stop offset="100%" stopColor="#A84E28"/>
               </radialGradient>
-              <linearGradient id="skinArm" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C98B68"/>
-                <stop offset="35%" stopColor="#F0B98D"/>
-                <stop offset="65%" stopColor="#F5C5A0"/>
-                <stop offset="100%" stopColor="#C98B68"/>
+              <linearGradient id="gArmL" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#7A2010"/>
+                <stop offset="28%" stopColor="#C85030"/>
+                <stop offset="56%" stopColor="#E07040"/>
+                <stop offset="100%" stopColor="#8B2818"/>
               </linearGradient>
-              <linearGradient id="skinLeg" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#C98B68"/>
-                <stop offset="35%" stopColor="#F0B98D"/>
-                <stop offset="65%" stopColor="#F5C5A0"/>
-                <stop offset="100%" stopColor="#C98B68"/>
+              <linearGradient id="gArmR" x1="100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="#7A2010"/>
+                <stop offset="28%" stopColor="#C85030"/>
+                <stop offset="56%" stopColor="#E07040"/>
+                <stop offset="100%" stopColor="#8B2818"/>
               </linearGradient>
-              <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#2C1F14"/>
-                <stop offset="100%" stopColor="#4A3020"/>
+              <linearGradient id="gLegL" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#7A2010"/>
+                <stop offset="30%" stopColor="#C85030"/>
+                <stop offset="62%" stopColor="#E07040"/>
+                <stop offset="100%" stopColor="#8B2818"/>
+              </linearGradient>
+              <linearGradient id="gLegR" x1="100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="#7A2010"/>
+                <stop offset="30%" stopColor="#C85030"/>
+                <stop offset="62%" stopColor="#E07040"/>
+                <stop offset="100%" stopColor="#8B2818"/>
               </linearGradient>
             </defs>
 
             {view === 'front'
-              ? <FrontBody ghs={getHotspotStyle} onClick={handlePartClick} />
-              : <BackBody  ghs={getHotspotStyle} onClick={handlePartClick} />
+              ? <FrontBody hs={hs} onClick={handlePartClick} />
+              : <BackBody  hs={hs} onClick={handlePartClick} />
             }
           </svg>
 
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: '14px', marginTop: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '14px', marginTop: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {[
-              { color: 'rgba(15,110,86,0.55)', border: '#0f6e56', label: 'Selected' },
-              { color: 'rgba(29,158,117,0.30)', border: '#1d9e75', label: 'Has symptoms' },
+              { c: 'rgba(15,110,86,0.52)', b: '#0f6e56', t: 'Selected' },
+              { c: 'rgba(29,158,117,0.30)', b: '#1d9e75', t: 'Has symptoms' },
             ].map(l => (
-              <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#666' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: l.color, border: `1px solid ${l.border}` }} />
-                {l.label}
+              <div key={l.t} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>
+                <div style={{ width: '11px', height: '11px', borderRadius: '3px', background: l.c, border: `1px solid ${l.b}` }}/>
+                {l.t}
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Right Panel ── */}
+        {/* Right Panel */}
         <div>
           {selected ? (
             <div style={card}>
-              <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '700' }}>
-                {currentParts[selected]?.label}
-              </h3>
+              <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '700' }}>{currentParts[selected]?.label}</h3>
               <p style={{ fontSize: '13px', color: '#888', margin: '0 0 16px' }}>Select all symptoms that apply:</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {currentParts[selected]?.symptoms.map(symptom => {
-                  const checked = allSymptoms.includes(symptom);
+                {currentParts[selected]?.symptoms.map(s => {
+                  const on = allSymptoms.includes(s);
                   return (
-                    <label key={symptom} style={{
+                    <label key={s} style={{
                       display: 'flex', alignItems: 'center', gap: '8px',
                       padding: '9px 12px', borderRadius: '9px', cursor: 'pointer', fontSize: '13px',
-                      background: checked ? '#e1f5ee' : '#f9fafb',
-                      border: `1px solid ${checked ? '#1d9e75' : '#e5e7eb'}`,
-                      transition: 'all 0.15s',
+                      background: on ? '#e1f5ee' : '#f9fafb',
+                      border: `1px solid ${on ? '#1d9e75' : '#e5e7eb'}`,
                     }}>
-                      <input type="checkbox" checked={checked} onChange={() => toggleSymptom(symptom)}
-                        style={{ width: '15px', height: '15px', accentColor: '#0f6e56', flexShrink: 0 }} />
-                      <span style={{ color: checked ? '#0f6e56' : '#444', fontWeight: checked ? '600' : '400' }}>
-                        {symptom}
-                      </span>
+                      <input type="checkbox" checked={on} onChange={() => toggleSymptom(s)}
+                        style={{ width: '15px', height: '15px', accentColor: '#0f6e56', flexShrink: 0 }}/>
+                      <span style={{ color: on ? '#0f6e56' : '#444', fontWeight: on ? '600' : '400' }}>{s}</span>
                     </label>
                   );
                 })}
               </div>
             </div>
           ) : (
-            <div style={{ ...card, background: '#f9fafb', textAlign: 'center', padding: '64px 24px' }}>
-              <div style={{ fontSize: '52px', marginBottom: '14px' }}>👆</div>
-              <p style={{ color: '#888', fontSize: '15px', margin: 0, lineHeight: '1.6' }}>
-                Click any body part on the diagram to see symptoms
-              </p>
-              <p style={{ color: '#bbb', fontSize: '12px', marginTop: '8px' }}>
-                Switch between Front and Back view for complete coverage
-              </p>
+            <div style={{ ...card, background: '#f9fafb', textAlign: 'center', padding: '60px 24px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '14px' }}>👆</div>
+              <p style={{ color: '#888', fontSize: '15px', margin: 0 }}>Click any body region on the diagram</p>
+              <p style={{ color: '#bbb', fontSize: '12px', marginTop: '8px' }}>Switch between Front and Back view for complete coverage</p>
             </div>
           )}
 
@@ -203,13 +201,11 @@ export default function BodyMap() {
                     padding: '5px 11px', borderRadius: '20px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '5px', border: '1px solid #b2dece',
                   }}>
-                    {s} <span style={{ opacity: 0.5, fontSize: '14px', lineHeight: 1 }}>×</span>
+                    {s} <span style={{ opacity: 0.5 }}>×</span>
                   </span>
                 ))}
               </div>
-              <button onClick={handleProceed} style={greenBtn}>
-                Get AI Diagnosis for these symptoms →
-              </button>
+              <button onClick={handleProceed} style={greenBtn}>Get AI Diagnosis →</button>
             </div>
           )}
         </div>
@@ -218,156 +214,249 @@ export default function BodyMap() {
   );
 }
 
-/* ─── FRONT BODY ─────────────────────────────────────────── */
-function FrontBody({ ghs, onClick }) {
+/* ─── FRONT BODY ─────────────────────────────────────────────────── */
+function FrontBody({ hs, onClick }) {
   return (
     <g>
-      {/* ── STATIC VISUAL LAYER ── */}
-
-      {/* HEAD */}
-      <path d="M100 9 C76 9 59 25 59 47 C59 65 69 79 83 85 L85 93 L115 93 L117 85 C131 79 141 65 141 47 C141 25 124 9 100 9Z"
-        fill="url(#skinHead)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Hair */}
-      <path d="M100 9 C76 9 59 25 59 47 C59 26 72 13 100 11 C128 13 141 26 141 47 C141 25 124 9 100 9Z"
-        fill="url(#hairGrad)" stroke="none"/>
-      <ellipse cx="100" cy="24" rx="32" ry="16" fill="url(#hairGrad)" opacity="0.7" stroke="none"/>
-      {/* Ears */}
-      <ellipse cx="58" cy="51" rx="5" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <ellipse cx="142" cy="51" rx="5" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <path d="M59 46 Q62 51 59 56" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      <path d="M141 46 Q138 51 141 56" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      {/* Eyebrows */}
-      <path d="M79 38 Q87 35 95 38" fill="none" stroke="#3A2518" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M105 38 Q113 35 121 38" fill="none" stroke="#3A2518" strokeWidth="1.5" strokeLinecap="round"/>
-      {/* Eyes */}
-      <ellipse cx="87" cy="45" rx="7" ry="5" fill="white" stroke="#999" strokeWidth="0.5"/>
-      <circle cx="87" cy="45" r="3.5" fill="#3A2518"/>
-      <circle cx="88.2" cy="43.5" r="1.1" fill="white"/>
-      <ellipse cx="113" cy="45" rx="7" ry="5" fill="white" stroke="#999" strokeWidth="0.5"/>
-      <circle cx="113" cy="45" r="3.5" fill="#3A2518"/>
-      <circle cx="114.2" cy="43.5" r="1.1" fill="white"/>
-      {/* Upper eyelid lines */}
-      <path d="M80 42 Q87 39 94 42" fill="none" stroke="#3A2518" strokeWidth="0.7"/>
-      <path d="M106 42 Q113 39 120 42" fill="none" stroke="#3A2518" strokeWidth="0.7"/>
-      {/* Nose */}
-      <path d="M100 53 L97 64 Q100 67 103 64Z" fill="#D4956A" stroke="none"/>
-      <path d="M97 64 Q93 67 94 70 Q100 69 106 70 Q107 67 103 64" fill="#D4956A" stroke="none"/>
-      {/* Mouth */}
-      <path d="M92 75 Q100 80 108 75" fill="#E07070" stroke="none"/>
-      <path d="M92 75 Q100 72 108 75" fill="none" stroke="#C06060" strokeWidth="0.6"/>
-      <path d="M92 75 Q100 80 108 75" fill="none" stroke="#C06060" strokeWidth="0.6"/>
-      {/* Chin definition */}
-      <path d="M94 84 Q100 88 106 84" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-
-      {/* NECK */}
-      <path d="M87 91 L84 112 L116 112 L113 91Z" fill="url(#skinTorso)" stroke="#C08060" strokeWidth="0.7"/>
-      <path d="M93 93 L90 110" fill="none" stroke="#C08060" strokeWidth="0.4" opacity="0.6"/>
-      <path d="M107 93 L110 110" fill="none" stroke="#C08060" strokeWidth="0.4" opacity="0.6"/>
-      <path d="M87 112 Q100 116 113 112" fill="none" stroke="#C08060" strokeWidth="0.6"/>
+      {/* ── BASE SHAPES ── */}
 
       {/* TORSO */}
-      <path d="M84 110 C62 114 38 126 32 147 L28 168 L32 212 L36 257 L46 287 L72 294 L72 310 L128 310 L128 294 L154 287 L164 257 L168 212 L172 168 L168 147 C162 126 138 114 116 110Z"
-        fill="url(#skinTorso)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Collar bones */}
-      <path d="M88 113 Q100 118 112 113" fill="none" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Sternum */}
-      <path d="M100 116 L100 210" fill="none" stroke="#C08060" strokeWidth="0.5" strokeDasharray="3,2" opacity="0.5"/>
-      {/* Chest muscles hint */}
-      <path d="M100 135 Q78 142 64 155" fill="none" stroke="#C08060" strokeWidth="0.5" opacity="0.4"/>
-      <path d="M100 135 Q122 142 136 155" fill="none" stroke="#C08060" strokeWidth="0.5" opacity="0.4"/>
-      {/* Navel */}
-      <ellipse cx="100" cy="232" rx="3.5" ry="4.5" fill="none" stroke="#C08060" strokeWidth="1"/>
-      {/* Abs hint */}
-      <path d="M94 200 L94 230" fill="none" stroke="#C08060" strokeWidth="0.4" strokeDasharray="4,3" opacity="0.35"/>
-      <path d="M106 200 L106 230" fill="none" stroke="#C08060" strokeWidth="0.4" strokeDasharray="4,3" opacity="0.35"/>
-      {/* Hip curve */}
-      <path d="M46 280 Q100 298 154 280" fill="none" stroke="#C08060" strokeWidth="0.5" opacity="0.5"/>
-
-      {/* UNDERWEAR */}
-      <path d="M46 283 Q100 302 154 283 L150 312 Q100 326 50 312Z" fill="#7090AA" opacity="0.55" stroke="none"/>
+      <path d="M 86 104 C 70 107 44 118 32 140 L 24 164 22 202 24 250 30 284 50 298 74 306 74 316 126 316 126 306 150 298 170 284 176 250 178 202 176 164 168 140 C 156 118 130 107 114 104 Z"
+        fill="url(#gMuscle)" stroke="#6A1808" strokeWidth="1"/>
 
       {/* LEFT ARM */}
-      <path d="M32 147 C20 155 11 170 9 188 L7 228 L11 268 L20 298 L35 293 L40 262 L38 222 L40 185 C38 168 35 154 32 147Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Left arm muscle line */}
-      <path d="M16 175 C14 210 16 245 20 275" fill="none" stroke="#C08060" strokeWidth="0.4" opacity="0.4"/>
-      {/* LEFT HAND */}
-      <path d="M20 296 C13 302 9 313 11 322 C13 329 20 332 27 329 L31 320 L37 313 L35 294Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M13 316 Q11 326 15 329" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      <path d="M19 320 Q18 330 22 332" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      <path d="M26 317 Q26 327 28 329" fill="none" stroke="#C08060" strokeWidth="0.5"/>
+      <path d="M 32 140 C 20 153 10 172 8 194 L 6 232 10 270 19 302 32 296 39 266 37 230 38 194 C 38 172 36 154 32 140 Z"
+        fill="url(#gArmL)" stroke="#6A1808" strokeWidth="0.9"/>
+      {/* LEFT FOREARM + HAND */}
+      <path d="M 19 300 C 11 308 6 320 9 330 C 12 338 22 340 30 336 L 36 324 40 312 37 298 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="12" y1="324" x2="10" y2="333" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="18" y1="329" x2="17" y2="338" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="25" y1="331" x2="25" y2="340" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="31" y1="328" x2="33" y2="336" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
 
       {/* RIGHT ARM */}
-      <path d="M168 147 C180 155 189 170 191 188 L193 228 L189 268 L180 298 L165 293 L160 262 L162 222 L160 185 C162 168 165 154 168 147Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M184 175 C186 210 184 245 180 275" fill="none" stroke="#C08060" strokeWidth="0.4" opacity="0.4"/>
-      {/* RIGHT HAND */}
-      <path d="M180 296 C187 302 191 313 189 322 C187 329 180 332 173 329 L169 320 L163 313 L165 294Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M187 316 Q189 326 185 329" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      <path d="M181 320 Q182 330 178 332" fill="none" stroke="#C08060" strokeWidth="0.5"/>
-      <path d="M174 317 Q174 327 172 329" fill="none" stroke="#C08060" strokeWidth="0.5"/>
+      <path d="M 168 140 C 180 153 190 172 192 194 L 194 232 190 270 181 302 168 296 161 266 163 230 162 194 C 162 172 164 154 168 140 Z"
+        fill="url(#gArmR)" stroke="#6A1808" strokeWidth="0.9"/>
+      {/* RIGHT FOREARM + HAND */}
+      <path d="M 181 300 C 189 308 194 320 191 330 C 188 338 178 340 170 336 L 164 324 160 312 163 298 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="188" y1="324" x2="190" y2="333" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="182" y1="329" x2="183" y2="338" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="175" y1="331" x2="175" y2="340" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="169" y1="328" x2="167" y2="336" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
 
       {/* LEFT LEG */}
-      <path d="M72 310 L68 382 L64 432 L62 480 L74 484 L80 480 L84 432 L86 380 L88 310Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Left kneecap */}
-      <ellipse cx="76" cy="392" rx="10" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <path d="M68 392 Q76 396 84 392" fill="none" stroke="#C08060" strokeWidth="0.5"/>
+      <path d="M 74 313 C 68 342 64 382 62 422 L 60 458 58 492 70 500 81 495 85 460 87 422 89 382 90 316 Z"
+        fill="url(#gLegL)" stroke="#6A1808" strokeWidth="0.9"/>
       {/* LEFT FOOT */}
-      <path d="M62 480 C55 486 50 495 54 502 C58 507 74 507 80 501 L80 480Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M54 500 L52 505" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M58 503 L57 508" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M63 505 L63 510" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M68 505 L69 510" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M73 503 L75 507" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
+      <path d="M 58 492 C 50 500 46 511 51 518 C 55 524 72 525 81 518 L 81 495 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="52" y1="516" x2="50" y2="523" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="58" y1="521" x2="57" y2="528" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="64" y1="523" x2="64" y2="530" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="70" y1="521" x2="71" y2="527" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="76" y1="517" x2="78" y2="522" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
 
       {/* RIGHT LEG */}
-      <path d="M128 310 L132 382 L136 432 L138 480 L126 484 L120 480 L116 432 L114 380 L112 310Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Right kneecap */}
-      <ellipse cx="124" cy="392" rx="10" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <path d="M116 392 Q124 396 132 392" fill="none" stroke="#C08060" strokeWidth="0.5"/>
+      <path d="M 126 313 C 132 342 136 382 138 422 L 140 458 142 492 130 500 119 495 115 460 113 422 111 382 110 316 Z"
+        fill="url(#gLegR)" stroke="#6A1808" strokeWidth="0.9"/>
       {/* RIGHT FOOT */}
-      <path d="M138 480 C145 486 150 495 146 502 C142 507 126 507 120 501 L120 480Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M146 500 L148 505" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M142 503 L143 508" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M137 505 L137 510" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M132 505 L131 510" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M127 503 L125 507" fill="none" stroke="#C08060" strokeWidth="0.8" strokeLinecap="round"/>
+      <path d="M 142 492 C 150 500 154 511 149 518 C 145 524 128 525 119 518 L 119 495 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="148" y1="516" x2="150" y2="523" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="142" y1="521" x2="143" y2="528" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="136" y1="523" x2="136" y2="530" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="130" y1="521" x2="129" y2="527" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+      <line x1="124" y1="517" x2="122" y2="522" stroke="#9B3A1A" strokeWidth="1.1" strokeLinecap="round"/>
+
+      {/* ── MUSCLE DETAILS ── */}
+
+      {/* DELTOID LEFT */}
+      <path d="M 32 140 C 22 128 24 112 38 110 C 52 108 64 120 64 135 C 52 141 41 145 32 140 Z"
+        fill="#D86040" stroke="#7A2010" strokeWidth="0.6"/>
+      <path d="M 38 118 C 31 126 30 136 36 140" fill="none" stroke="#F09060" strokeWidth="1.8" strokeLinecap="round" opacity="0.55"/>
+
+      {/* DELTOID RIGHT */}
+      <path d="M 168 140 C 178 128 176 112 162 110 C 148 108 136 120 136 135 C 148 141 159 145 168 140 Z"
+        fill="#D86040" stroke="#7A2010" strokeWidth="0.6"/>
+      <path d="M 162 118 C 169 126 170 136 164 140" fill="none" stroke="#F09060" strokeWidth="1.8" strokeLinecap="round" opacity="0.55"/>
+
+      {/* PECTORAL LEFT */}
+      <path d="M 64 132 C 57 141 55 155 62 170 C 68 180 83 184 96 182 L 100 160 C 95 145 84 131 70 128 Z"
+        fill="#D86848" stroke="#7A2010" strokeWidth="0.6"/>
+      <path d="M 70 134 C 62 145 60 160 68 174" fill="none" stroke="#F09868" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* PECTORAL RIGHT */}
+      <path d="M 136 132 C 143 141 145 155 138 170 C 132 180 117 184 104 182 L 100 160 C 105 145 116 131 130 128 Z"
+        fill="#D86848" stroke="#7A2010" strokeWidth="0.6"/>
+      <path d="M 130 134 C 138 145 140 160 132 174" fill="none" stroke="#F09868" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* STERNUM */}
+      <line x1="100" y1="116" x2="100" y2="192" stroke="#EDD0A0" strokeWidth="1.2" opacity="0.45"/>
+
+      {/* ABS - tendinous inscriptions */}
+      <line x1="100" y1="192" x2="100" y2="290" stroke="#EDD0A0" strokeWidth="1" opacity="0.4"/>
+      <path d="M 88 197 Q 100 200 112 197" fill="none" stroke="#EDD0A0" strokeWidth="1" opacity="0.45"/>
+      <path d="M 86 216 Q 100 220 114 216" fill="none" stroke="#EDD0A0" strokeWidth="1" opacity="0.4"/>
+      <path d="M 84 238 Q 100 242 116 238" fill="none" stroke="#EDD0A0" strokeWidth="1" opacity="0.35"/>
+      <path d="M 84 260 Q 100 264 116 260" fill="none" stroke="#EDD0A0" strokeWidth="1" opacity="0.3"/>
+      {/* Ab block highlights */}
+      <rect x="88" y="193" width="9" height="20" rx="4" fill="#E07040" opacity="0.28"/>
+      <rect x="103" y="193" width="9" height="20" rx="4" fill="#E07040" opacity="0.28"/>
+      <rect x="87" y="217" width="10" height="19" rx="4" fill="#E07040" opacity="0.22"/>
+      <rect x="103" y="217" width="10" height="19" rx="4" fill="#E07040" opacity="0.22"/>
+      <rect x="86" y="239" width="10" height="18" rx="4" fill="#E07040" opacity="0.18"/>
+      <rect x="104" y="239" width="10" height="18" rx="4" fill="#E07040" opacity="0.18"/>
+
+      {/* EXTERNAL OBLIQUE */}
+      <path d="M 72 190 C 59 212 55 244 58 275 C 62 284 70 290 76 292 C 77 265 76 238 80 210 Z"
+        fill="#C84E30" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+      <path d="M 128 190 C 141 212 145 244 142 275 C 138 284 130 290 124 292 C 123 265 124 238 120 210 Z"
+        fill="#C84E30" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+
+      {/* SERRATUS ANTERIOR (finger-like ribs, side of chest) */}
+      {[148,158,168,178].map((y,i) => (
+        <path key={y} d={`M ${65-i*1} ${y} C ${58-i} ${y+4} ${55-i} ${y+8} ${58-i} ${y+12}`}
+          fill="none" stroke="#C84830" strokeWidth="1.4" strokeLinecap="round" opacity="0.5"/>
+      ))}
+      {[148,158,168,178].map((y,i) => (
+        <path key={y+'r'} d={`M ${135+i*1} ${y} C ${142+i} ${y+4} ${145+i} ${y+8} ${142+i} ${y+12}`}
+          fill="none" stroke="#C84830" strokeWidth="1.4" strokeLinecap="round" opacity="0.5"/>
+      ))}
+
+      {/* BICEP LEFT */}
+      <ellipse cx="25" cy="210" rx="13" ry="22" fill="#D86040" stroke="#7A2010" strokeWidth="0.5" opacity="0.75"/>
+      <path d="M 19 198 C 17 210 19 222 23 228" fill="none" stroke="#F09060" strokeWidth="1.8" strokeLinecap="round" opacity="0.5"/>
+
+      {/* BICEP RIGHT */}
+      <ellipse cx="175" cy="210" rx="13" ry="22" fill="#D86040" stroke="#7A2010" strokeWidth="0.5" opacity="0.75"/>
+      <path d="M 181 198 C 183 210 181 222 177 228" fill="none" stroke="#F09060" strokeWidth="1.8" strokeLinecap="round" opacity="0.5"/>
+
+      {/* FOREARM lines */}
+      <path d="M 20 258 C 18 272 19 286 20 300" fill="none" stroke="#EDD0A0" strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
+      <path d="M 180 258 C 182 272 181 286 180 300" fill="none" stroke="#EDD0A0" strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
+
+      {/* SHORTS */}
+      <path d="M 54 292 C 68 310 100 320 132 310 L 146 292 L 142 320 C 120 342 80 342 58 320 Z"
+        fill="#3A4A62" opacity="0.88" stroke="#252E40" strokeWidth="0.6"/>
+
+      {/* VASTUS LATERALIS left */}
+      <path d="M 67 317 C 61 346 59 382 62 418 L 70 423 C 70 388 70 353 76 322 Z"
+        fill="#CC4E30" stroke="#7A2010" strokeWidth="0.5" opacity="0.68"/>
+      {/* VASTUS MEDIALIS left (teardrop near knee) */}
+      <ellipse cx="81" cy="424" rx="10" ry="13" fill="#D86040" stroke="#7A2010" strokeWidth="0.5" opacity="0.65" transform="rotate(-12 81 424)"/>
+      {/* RECTUS FEMORIS left (central quad line) */}
+      <path d="M 80 318 C 78 352 76 386 76 420" fill="none" stroke="#EDD0A0" strokeWidth="1.2" strokeLinecap="round" opacity="0.35"/>
+
+      {/* VASTUS LATERALIS right */}
+      <path d="M 133 317 C 139 346 141 382 138 418 L 130 423 C 130 388 130 353 124 322 Z"
+        fill="#CC4E30" stroke="#7A2010" strokeWidth="0.5" opacity="0.68"/>
+      {/* VASTUS MEDIALIS right */}
+      <ellipse cx="119" cy="424" rx="10" ry="13" fill="#D86040" stroke="#7A2010" strokeWidth="0.5" opacity="0.65" transform="rotate(12 119 424)"/>
+      {/* RECTUS FEMORIS right */}
+      <path d="M 120 318 C 122 352 124 386 124 420" fill="none" stroke="#EDD0A0" strokeWidth="1.2" strokeLinecap="round" opacity="0.35"/>
+
+      {/* SARTORIUS left */}
+      <path d="M 78 318 C 74 350 70 382 68 416" fill="none" stroke="#E8C088" strokeWidth="1.5" strokeLinecap="round" opacity="0.38"/>
+      {/* SARTORIUS right */}
+      <path d="M 122 318 C 126 350 130 382 132 416" fill="none" stroke="#E8C088" strokeWidth="1.5" strokeLinecap="round" opacity="0.38"/>
+
+      {/* PATELLA left */}
+      <ellipse cx="74" cy="440" rx="12" ry="10" fill="#E8A868" stroke="#8B3018" strokeWidth="0.9"/>
+      <path d="M 66 440 Q 74 444 82 440" fill="none" stroke="#8B3018" strokeWidth="0.6" opacity="0.6"/>
+
+      {/* PATELLA right */}
+      <ellipse cx="126" cy="440" rx="12" ry="10" fill="#E8A868" stroke="#8B3018" strokeWidth="0.9"/>
+      <path d="M 118 440 Q 126 444 134 440" fill="none" stroke="#8B3018" strokeWidth="0.6" opacity="0.6"/>
+
+      {/* TIBIALIS ANTERIOR left */}
+      <path d="M 67 453 C 65 468 65 484 67 498" fill="none" stroke="#EDD0A0" strokeWidth="2.5" strokeLinecap="round" opacity="0.38"/>
+      {/* GASTROCNEMIUS side left */}
+      <path d="M 61 453 C 59 468 59 484 63 498" fill="none" stroke="#D86040" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+
+      {/* TIBIALIS ANTERIOR right */}
+      <path d="M 133 453 C 135 468 135 484 133 498" fill="none" stroke="#EDD0A0" strokeWidth="2.5" strokeLinecap="round" opacity="0.38"/>
+      {/* GASTROCNEMIUS side right */}
+      <path d="M 139 453 C 141 468 141 484 137 498" fill="none" stroke="#D86040" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+
+      {/* ── HEAD ── */}
+      <path d="M 100 7 C 76 7 59 23 59 45 C 59 63 69 77 82 83 L 84 92 L 116 92 L 118 83 C 131 77 141 63 141 45 C 141 23 124 7 100 7 Z"
+        fill="url(#gHead)" stroke="#8B4020" strokeWidth="0.9"/>
+      {/* Hair */}
+      <path d="M 100 7 C 76 7 59 23 59 45 C 59 28 72 13 100 11 C 128 13 141 28 141 45 C 141 23 124 7 100 7 Z" fill="#1E0F08"/>
+      <ellipse cx="100" cy="21" rx="36" ry="18" fill="#1E0F08"/>
+      {/* Ears */}
+      <ellipse cx="58" cy="49" rx="5" ry="8" fill="#D47848" stroke="#8B4020" strokeWidth="0.6"/>
+      <path d="M 59 43 Q 63 49 59 55" fill="none" stroke="#8B4020" strokeWidth="0.7"/>
+      <ellipse cx="142" cy="49" rx="5" ry="8" fill="#D47848" stroke="#8B4020" strokeWidth="0.6"/>
+      <path d="M 141 43 Q 137 49 141 55" fill="none" stroke="#8B4020" strokeWidth="0.7"/>
+      {/* Eyebrows */}
+      <path d="M 79 37 Q 87 34 95 37" fill="none" stroke="#2C1808" strokeWidth="1.9" strokeLinecap="round"/>
+      <path d="M 105 37 Q 113 34 121 37" fill="none" stroke="#2C1808" strokeWidth="1.9" strokeLinecap="round"/>
+      {/* Eyes */}
+      <ellipse cx="87" cy="44" rx="7.5" ry="5.5" fill="white" stroke="#bbb" strokeWidth="0.4"/>
+      <circle cx="87" cy="44" r="3.5" fill="#2C1808"/>
+      <circle cx="88.2" cy="42.5" r="1.2" fill="white"/>
+      <ellipse cx="113" cy="44" rx="7.5" ry="5.5" fill="white" stroke="#bbb" strokeWidth="0.4"/>
+      <circle cx="113" cy="44" r="3.5" fill="#2C1808"/>
+      <circle cx="114.2" cy="42.5" r="1.2" fill="white"/>
+      <path d="M 80 41 Q 87 38 94 41" fill="none" stroke="#2C1808" strokeWidth="0.8"/>
+      <path d="M 106 41 Q 113 38 120 41" fill="none" stroke="#2C1808" strokeWidth="0.8"/>
+      {/* Nose */}
+      <path d="M 100 51 L 97 63 Q 100 66 103 63 Z" fill="#C07040"/>
+      <path d="M 97 63 Q 92 67 94 70 Q 100 69 106 70 Q 108 67 103 63" fill="#C07040"/>
+      {/* Mouth */}
+      <path d="M 93 75 Q 100 80 107 75" fill="#B85A50"/>
+      <path d="M 93 75 Q 100 72 107 75" fill="none" stroke="#9A4040" strokeWidth="0.7"/>
+      {/* Neck */}
+      <path d="M 86 89 L 83 107 L 117 107 L 114 89 Z" fill="#D07848" stroke="#8B4020" strokeWidth="0.7"/>
+      <path d="M 93 91 C 90 97 89 103 89 107" fill="none" stroke="#A84E28" strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M 107 91 C 110 97 111 103 111 107" fill="none" stroke="#A84E28" strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M 88 107 Q 100 111 112 107" fill="none" stroke="#EDD0A0" strokeWidth="1.1" opacity="0.55"/>
 
       {/* ── INTERACTIVE HOTSPOTS ── */}
-      <ellipse cx="100" cy="51" rx="43" ry="45" {...ghs('head')} onClick={() => onClick('head')}/>
-      <rect x="76" y="38" width="48" height="15" rx="5" {...ghs('eyes')} onClick={() => onClick('eyes')}/>
-      <rect x="92" y="52" width="16" height="18" rx="5" {...ghs('nose')} onClick={() => onClick('nose')}/>
-      <rect x="83" y="89" width="34" height="26" rx="7" {...ghs('throat')} onClick={() => onClick('throat')}/>
-      <rect x="58" y="110" width="84" height="96" rx="7" {...ghs('chest')} onClick={() => onClick('chest')}/>
-      <rect x="60" y="203" width="80" height="62" rx="7" {...ghs('abdomen')} onClick={() => onClick('abdomen')}/>
-      <rect x="54" y="262" width="92" height="52" rx="7" {...ghs('lowerAbdomen')} onClick={() => onClick('lowerAbdomen')}/>
-      <rect x="6" y="142" width="40" height="188" rx="12" {...ghs('leftArm')} onClick={() => onClick('leftArm')}/>
-      <rect x="154" y="142" width="40" height="188" rx="12" {...ghs('rightArm')} onClick={() => onClick('rightArm')}/>
-      <rect x="60" y="310" width="32" height="178" rx="12" {...ghs('leftLeg')} onClick={() => onClick('leftLeg')}/>
-      <rect x="108" y="310" width="32" height="178" rx="12" {...ghs('rightLeg')} onClick={() => onClick('rightLeg')}/>
-      <rect x="48" y="477" width="36" height="34" rx="7" {...ghs('leftFoot')} onClick={() => onClick('leftFoot')}/>
-      <rect x="116" y="477" width="36" height="34" rx="7" {...ghs('rightFoot')} onClick={() => onClick('rightFoot')}/>
+      <ellipse cx="100" cy="49" rx="43" ry="45" {...hs('head')} onClick={() => onClick('head')}/>
+      <rect x="82" y="86" width="36" height="25" rx="6" {...hs('neckThroat')} onClick={() => onClick('neckThroat')}/>
+      <ellipse cx="36" cy="124" rx="24" ry="19" {...hs('leftShoulder')} onClick={() => onClick('leftShoulder')}/>
+      <ellipse cx="164" cy="124" rx="24" ry="19" {...hs('rightShoulder')} onClick={() => onClick('rightShoulder')}/>
+      <rect x="56" y="108" width="88" height="82" rx="8" {...hs('chest')} onClick={() => onClick('chest')}/>
+      <rect x="62" y="188" width="76" height="68" rx="8" {...hs('abdomen')} onClick={() => onClick('abdomen')}/>
+      <rect x="60" y="254" width="80" height="44" rx="8" {...hs('lowerAbdomen')} onClick={() => onClick('lowerAbdomen')}/>
+      <rect x="4" y="138" width="38" height="110" rx="12" {...hs('leftArm')} onClick={() => onClick('leftArm')}/>
+      <rect x="158" y="138" width="38" height="110" rx="12" {...hs('rightArm')} onClick={() => onClick('rightArm')}/>
+      <rect x="4" y="246" width="40" height="94" rx="12" {...hs('leftForearm')} onClick={() => onClick('leftForearm')}/>
+      <rect x="156" y="246" width="40" height="94" rx="12" {...hs('rightForearm')} onClick={() => onClick('rightForearm')}/>
+      <rect x="58" y="312" width="36" height="118" rx="12" {...hs('leftLeg')} onClick={() => onClick('leftLeg')}/>
+      <rect x="106" y="312" width="36" height="118" rx="12" {...hs('rightLeg')} onClick={() => onClick('rightLeg')}/>
+      <ellipse cx="74" cy="440" rx="15" ry="13" {...hs('leftKnee')} onClick={() => onClick('leftKnee')}/>
+      <ellipse cx="126" cy="440" rx="15" ry="13" {...hs('rightKnee')} onClick={() => onClick('rightKnee')}/>
+      <rect x="57" y="452" width="30" height="44" rx="10" {...hs('leftLowerLeg')} onClick={() => onClick('leftLowerLeg')}/>
+      <rect x="113" y="452" width="30" height="44" rx="10" {...hs('rightLowerLeg')} onClick={() => onClick('rightLowerLeg')}/>
+      <rect x="44" y="490" width="40" height="34" rx="7" {...hs('leftFoot')} onClick={() => onClick('leftFoot')}/>
+      <rect x="116" y="490" width="40" height="34" rx="7" {...hs('rightFoot')} onClick={() => onClick('rightFoot')}/>
 
-      {/* Part labels */}
+      {/* Labels */}
       {[
-        { key:'head', x:100, y:16, t:'Head' },
-        { key:'chest', x:100, y:158, t:'Chest' },
-        { key:'abdomen', x:100, y:234, t:'Abdomen' },
-        { key:'lowerAbdomen', x:100, y:285, t:'Pelvis' },
-        { key:'leftArm', x:21, y:218, t:'L.Arm' },
-        { key:'rightArm', x:179, y:218, t:'R.Arm' },
-        { key:'leftLeg', x:76, y:385, t:'L.Leg' },
-        { key:'rightLeg', x:124, y:385, t:'R.Leg' },
-      ].map(({ key, x, y, t }) => (
-        <text key={key} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-          fontSize="5.8" fontWeight="700" fill="#555" opacity="0.8"
-          style={{ pointerEvents: 'none', userSelect: 'none' }}>
+        { k:'head', x:100, y:14, t:'Head' },
+        { k:'chest', x:100, y:152, t:'Chest' },
+        { k:'abdomen', x:100, y:225, t:'Abdomen' },
+        { k:'lowerAbdomen', x:100, y:276, t:'Pelvis' },
+        { k:'leftShoulder', x:36, y:109, t:'Shoulder' },
+        { k:'rightShoulder', x:164, y:109, t:'Shoulder' },
+        { k:'leftArm', x:23, y:195, t:'Bicep' },
+        { k:'rightArm', x:177, y:195, t:'Bicep' },
+        { k:'leftForearm', x:23, y:280, t:'Forearm' },
+        { k:'rightForearm', x:177, y:280, t:'Forearm' },
+        { k:'leftLeg', x:76, y:372, t:'Quad' },
+        { k:'rightLeg', x:124, y:372, t:'Quad' },
+        { k:'leftKnee', x:74, y:440, t:'Knee' },
+        { k:'rightKnee', x:126, y:440, t:'Knee' },
+        { k:'leftLowerLeg', x:72, y:474, t:'Calf' },
+        { k:'rightLowerLeg', x:128, y:474, t:'Calf' },
+      ].map(({ k, x, y, t }) => (
+        <text key={k} x={x} y={y} textAnchor="middle" fontSize="5.5" fontWeight="700"
+          fill="rgba(255,255,255,0.82)" style={{ pointerEvents: 'none', userSelect: 'none' }}>
           {t}
         </text>
       ))}
@@ -375,102 +464,200 @@ function FrontBody({ ghs, onClick }) {
   );
 }
 
-/* ─── BACK BODY ──────────────────────────────────────────── */
-function BackBody({ ghs, onClick }) {
+/* ─── BACK BODY ──────────────────────────────────────────────────── */
+function BackBody({ hs, onClick }) {
   return (
     <g>
-      {/* HEAD (back) */}
-      <path d="M100 9 C76 9 59 25 59 47 C59 65 69 79 83 85 L85 93 L115 93 L117 85 C131 79 141 65 141 47 C141 25 124 9 100 9Z"
-        fill="url(#skinHead)" stroke="#C08060" strokeWidth="0.8"/>
-      <ellipse cx="100" cy="32" rx="38" ry="26" fill="url(#hairGrad)" stroke="none"/>
-      <path d="M100 9 C76 9 59 25 59 47 C59 26 72 13 100 11 C128 13 141 26 141 47 C141 25 124 9 100 9Z"
-        fill="url(#hairGrad)" stroke="none"/>
-      <ellipse cx="58" cy="51" rx="5" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <ellipse cx="142" cy="51" rx="5" ry="8" fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
+      {/* ── BASE SHAPES ── */}
 
-      {/* NECK */}
-      <path d="M87 91 L84 112 L116 112 L113 91Z" fill="url(#skinTorso)" stroke="#C08060" strokeWidth="0.7"/>
-      <path d="M100 93 L100 110" fill="none" stroke="#C08060" strokeWidth="0.8" strokeDasharray="2,1.5"/>
+      {/* TORSO */}
+      <path d="M 86 104 C 70 107 44 118 32 140 L 24 164 22 202 24 250 30 284 50 298 74 306 74 316 126 316 126 306 150 298 170 284 176 250 178 202 176 164 168 140 C 156 118 130 107 114 104 Z"
+        fill="url(#gMuscle)" stroke="#6A1808" strokeWidth="1"/>
 
-      {/* BACK TORSO */}
-      <path d="M84 110 C62 114 38 126 32 147 L28 168 L32 212 L36 257 L46 287 L72 294 L72 310 L128 310 L128 294 L154 287 L164 257 L168 212 L172 168 L168 147 C162 126 138 114 116 110Z"
-        fill="url(#skinTorso)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Spine */}
-      <path d="M100 114 L100 288" fill="none" stroke="#C08060" strokeWidth="0.9" strokeDasharray="3,2.5"/>
-      {[122,137,152,167,182,197,212,228,244,260,275].map(y => (
-        <circle key={y} cx="100" cy={y} r="2.2" fill="#D4956A" stroke="#C08060" strokeWidth="0.4"/>
+      {/* LEFT ARM */}
+      <path d="M 32 140 C 20 153 10 172 8 194 L 6 232 10 270 19 302 32 296 39 266 37 230 38 194 C 38 172 36 154 32 140 Z"
+        fill="url(#gArmL)" stroke="#6A1808" strokeWidth="0.9"/>
+      <path d="M 19 300 C 11 308 6 320 9 330 C 12 338 22 340 30 336 L 36 324 40 312 37 298 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="12" y1="324" x2="10" y2="333" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="18" y1="329" x2="17" y2="338" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="25" y1="331" x2="25" y2="340" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="31" y1="328" x2="33" y2="336" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+
+      {/* RIGHT ARM */}
+      <path d="M 168 140 C 180 153 190 172 192 194 L 194 232 190 270 181 302 168 296 161 266 163 230 162 194 C 162 172 164 154 168 140 Z"
+        fill="url(#gArmR)" stroke="#6A1808" strokeWidth="0.9"/>
+      <path d="M 181 300 C 189 308 194 320 191 330 C 188 338 178 340 170 336 L 164 324 160 312 163 298 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+      <line x1="188" y1="324" x2="190" y2="333" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="182" y1="329" x2="183" y2="338" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="175" y1="331" x2="175" y2="340" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="169" y1="328" x2="167" y2="336" stroke="#9B3A1A" strokeWidth="1.2" strokeLinecap="round"/>
+
+      {/* LEFT LEG */}
+      <path d="M 74 313 C 68 342 64 382 62 422 L 60 458 58 492 70 500 81 495 85 460 87 422 89 382 90 316 Z"
+        fill="url(#gLegL)" stroke="#6A1808" strokeWidth="0.9"/>
+      <path d="M 58 492 C 50 500 46 511 51 518 C 55 524 72 525 81 518 L 81 495 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+
+      {/* RIGHT LEG */}
+      <path d="M 126 313 C 132 342 136 382 138 422 L 140 458 142 492 130 500 119 495 115 460 113 422 111 382 110 316 Z"
+        fill="url(#gLegR)" stroke="#6A1808" strokeWidth="0.9"/>
+      <path d="M 142 492 C 150 500 154 511 149 518 C 145 524 128 525 119 518 L 119 495 Z"
+        fill="url(#gHead)" stroke="#6A1808" strokeWidth="0.9"/>
+
+      {/* ── BACK MUSCLE DETAILS ── */}
+
+      {/* TRAPEZIUS */}
+      <path d="M 84 106 C 70 108 48 120 36 140 L 32 150 C 60 142 80 130 100 125 C 120 130 140 142 168 150 L 164 140 C 152 120 130 108 116 106 Z"
+        fill="#D06040" stroke="#7A2010" strokeWidth="0.6"/>
+      <path d="M 100 111 C 80 117 58 130 44 144" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+      <path d="M 100 111 C 120 117 142 130 156 144" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* DELTOID LEFT back */}
+      <path d="M 32 140 C 22 128 24 112 38 110 C 52 108 64 120 64 135 C 52 141 41 145 32 140 Z"
+        fill="#D86040" stroke="#7A2010" strokeWidth="0.6"/>
+      {/* DELTOID RIGHT back */}
+      <path d="M 168 140 C 178 128 176 112 162 110 C 148 108 136 120 136 135 C 148 141 159 145 168 140 Z"
+        fill="#D86040" stroke="#7A2010" strokeWidth="0.6"/>
+
+      {/* SPINE */}
+      <path d="M 100 110 L 100 292" stroke="#EDD0A0" strokeWidth="1.5" strokeDasharray="3,2.5" opacity="0.5"/>
+      {[122,138,154,170,186,202,218,234,250,266,282].map(y => (
+        <circle key={y} cx="100" cy={y} r="2.4" fill="#E8B870" stroke="#8B3018" strokeWidth="0.4"/>
       ))}
-      {/* Shoulder blades */}
-      <ellipse cx="78" cy="156" rx="19" ry="24" fill="none" stroke="#C08060" strokeWidth="0.6" strokeDasharray="2,2" opacity="0.7"/>
-      <ellipse cx="122" cy="156" rx="19" ry="24" fill="none" stroke="#C08060" strokeWidth="0.6" strokeDasharray="2,2" opacity="0.7"/>
-      {/* Back muscles */}
-      <path d="M76 118 C60 145 55 185 60 225" fill="none" stroke="#C08060" strokeWidth="0.5" strokeDasharray="2,2" opacity="0.45"/>
-      <path d="M124 118 C140 145 145 185 140 225" fill="none" stroke="#C08060" strokeWidth="0.5" strokeDasharray="2,2" opacity="0.45"/>
-      <path d="M86 118 C78 145 76 185 78 225" fill="none" stroke="#C08060" strokeWidth="0.4" strokeDasharray="2,2" opacity="0.3"/>
-      <path d="M114 118 C122 145 124 185 122 225" fill="none" stroke="#C08060" strokeWidth="0.4" strokeDasharray="2,2" opacity="0.3"/>
+
+      {/* LATISSIMUS DORSI left */}
+      <path d="M 64 132 C 50 154 46 188 52 222 C 56 240 66 250 76 252 L 80 232 C 68 220 64 198 66 174 C 68 156 72 140 80 130 Z"
+        fill="#CC4A28" stroke="#7A2010" strokeWidth="0.6" opacity="0.85"/>
+      <path d="M 68 140 C 60 164 58 196 64 224" fill="none" stroke="#E87040" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* LATISSIMUS DORSI right */}
+      <path d="M 136 132 C 150 154 154 188 148 222 C 144 240 134 250 124 252 L 120 232 C 132 220 136 198 134 174 C 132 156 128 140 120 130 Z"
+        fill="#CC4A28" stroke="#7A2010" strokeWidth="0.6" opacity="0.85"/>
+      <path d="M 132 140 C 140 164 142 196 136 224" fill="none" stroke="#E87040" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* SCAPULA outlines */}
+      <path d="M 62 122 C 54 134 52 152 56 170 C 60 182 70 188 78 186 C 84 180 84 164 82 150 C 80 136 74 124 66 120 Z"
+        fill="none" stroke="#E8C890" strokeWidth="1.2" strokeDasharray="2,2" opacity="0.5"/>
+      <path d="M 138 122 C 146 134 148 152 144 170 C 140 182 130 188 122 186 C 116 180 116 164 118 150 C 120 136 126 124 134 120 Z"
+        fill="none" stroke="#E8C890" strokeWidth="1.2" strokeDasharray="2,2" opacity="0.5"/>
+
+      {/* ERECTOR SPINAE */}
+      <path d="M 92 128 L 90 282" stroke="#E8B060" strokeWidth="3" strokeLinecap="round" opacity="0.22"/>
+      <path d="M 108 128 L 110 282" stroke="#E8B060" strokeWidth="3" strokeLinecap="round" opacity="0.22"/>
+
+      {/* EXTERNAL OBLIQUE back */}
+      <path d="M 72 200 C 59 222 55 252 58 278 C 62 287 72 294 80 296 L 80 270 C 68 258 66 232 70 210 Z"
+        fill="#C84A28" stroke="#7A2010" strokeWidth="0.5" opacity="0.6"/>
+      <path d="M 128 200 C 141 222 145 252 142 278 C 138 287 128 294 120 296 L 120 270 C 132 258 134 232 130 210 Z"
+        fill="#C84A28" stroke="#7A2010" strokeWidth="0.5" opacity="0.6"/>
+
+      {/* TRICEP LEFT */}
+      <path d="M 10 190 C 10 202 12 216 14 228" fill="none" stroke="#EDD0A0" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+      <path d="M 28 180 C 22 196 20 216 22 230" fill="none" stroke="#EDD0A0" strokeWidth="1.2" strokeLinecap="round" opacity="0.35"/>
+      {/* TRICEP RIGHT */}
+      <path d="M 190 190 C 190 202 188 216 186 228" fill="none" stroke="#EDD0A0" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+      <path d="M 172 180 C 178 196 180 216 178 230" fill="none" stroke="#EDD0A0" strokeWidth="1.2" strokeLinecap="round" opacity="0.35"/>
+
+      {/* GLUTEUS MAXIMUS */}
+      <path d="M 56 295 C 56 308 64 318 76 322 C 88 326 96 324 100 318 C 104 324 112 326 124 322 C 136 318 144 308 144 295 L 140 286 C 128 298 116 304 100 304 C 84 304 72 298 60 286 Z"
+        fill="#D05838" stroke="#7A2010" strokeWidth="0.7"/>
+      <line x1="100" y1="297" x2="100" y2="326" stroke="#8B2810" strokeWidth="1.6" opacity="0.5"/>
+      <path d="M 76 298 C 70 306 70 316 76 320" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+      <path d="M 124 298 C 130 306 130 316 124 320" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
       {/* Lower back dimples */}
-      <circle cx="90" cy="262" r="3" fill="none" stroke="#C08060" strokeWidth="0.7" opacity="0.5"/>
-      <circle cx="110" cy="262" r="3" fill="none" stroke="#C08060" strokeWidth="0.7" opacity="0.5"/>
+      <circle cx="90" cy="265" r="3" fill="none" stroke="#EDD0A0" strokeWidth="0.9" opacity="0.45"/>
+      <circle cx="110" cy="265" r="3" fill="none" stroke="#EDD0A0" strokeWidth="0.9" opacity="0.45"/>
 
-      {/* ARMS */}
-      <path d="M32 147 C20 155 11 170 9 188 L7 228 L11 268 L20 298 L35 293 L40 262 L38 222 L40 185 C38 168 35 154 32 147Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M20 296 C13 302 9 313 11 322 C13 329 20 332 27 329 L31 320 L37 313 L35 294Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M168 147 C180 155 189 170 191 188 L193 228 L189 268 L180 298 L165 293 L160 262 L162 222 L160 185 C162 168 165 154 168 147Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
-      <path d="M180 296 C187 302 191 313 189 322 C187 329 180 332 173 329 L169 320 L163 313 L165 294Z"
-        fill="url(#skinArm)" stroke="#C08060" strokeWidth="0.8"/>
+      {/* SHORTS back */}
+      <path d="M 54 292 C 68 310 100 320 132 310 L 146 292 L 142 320 C 120 342 80 342 58 320 Z"
+        fill="#3A4A62" opacity="0.88" stroke="#252E40" strokeWidth="0.6"/>
 
-      {/* BUTTOCKS */}
-      <path d="M46 283 Q72 304 100 304 Q128 304 154 283 L150 314 Q100 330 50 314Z"
-        fill="#E8A882" stroke="#C08060" strokeWidth="0.6"/>
-      <path d="M100 294 L100 322" fill="none" stroke="#C08060" strokeWidth="0.6" strokeDasharray="2,1.5"/>
+      {/* BICEP FEMORIS left (outer hamstring) */}
+      <path d="M 67 317 C 61 348 59 384 62 420 L 70 425 C 68 390 68 356 74 324 Z"
+        fill="#C84828" stroke="#7A2010" strokeWidth="0.5" opacity="0.7"/>
+      {/* SEMITENDINOSUS left (inner hamstring) */}
+      <path d="M 88 317 C 90 348 88 382 84 418 L 78 423 C 80 388 82 354 84 322 Z"
+        fill="#CC4E2C" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+      <path d="M 76 318 C 74 350 72 384 72 418" fill="none" stroke="#EDD0A0" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
 
-      {/* UNDERWEAR */}
-      <path d="M46 283 Q100 304 154 283 L150 314 Q100 328 50 314Z" fill="#7090AA" opacity="0.55" stroke="none"/>
+      {/* BICEP FEMORIS right */}
+      <path d="M 133 317 C 139 348 141 384 138 420 L 130 425 C 132 390 132 356 126 324 Z"
+        fill="#C84828" stroke="#7A2010" strokeWidth="0.5" opacity="0.7"/>
+      {/* SEMITENDINOSUS right */}
+      <path d="M 112 317 C 110 348 112 382 116 418 L 122 423 C 120 388 118 354 116 322 Z"
+        fill="#CC4E2C" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+      <path d="M 124 318 C 126 350 128 384 128 418" fill="none" stroke="#EDD0A0" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
 
-      {/* LEGS */}
-      <path d="M72 310 L68 382 L64 432 L62 480 L74 484 L80 480 L84 432 L86 380 L88 310Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      {/* Calf muscle left */}
-      <ellipse cx="74" cy="445" rx="9" ry="20" fill="none" stroke="#C08060" strokeWidth="0.6" strokeDasharray="2,2" opacity="0.6"/>
-      {/* Knee back left */}
-      <path d="M66 388 Q76 384 86 388" fill="none" stroke="#C08060" strokeWidth="0.7" opacity="0.5"/>
-      <path d="M62 480 C55 486 50 495 54 502 C58 507 74 507 80 501 L80 480Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
+      {/* POPLITEAL FOSSA (back of knee) */}
+      <path d="M 63 422 Q 76 428 88 422" fill="none" stroke="#EDD0A0" strokeWidth="1.2" opacity="0.5"/>
+      <path d="M 63 430 Q 76 424 88 430" fill="none" stroke="#EDD0A0" strokeWidth="0.8" opacity="0.3"/>
+      <path d="M 112 422 Q 125 428 137 422" fill="none" stroke="#EDD0A0" strokeWidth="1.2" opacity="0.5"/>
+      <path d="M 112 430 Q 125 424 137 430" fill="none" stroke="#EDD0A0" strokeWidth="0.8" opacity="0.3"/>
 
-      <path d="M128 310 L132 382 L136 432 L138 480 L126 484 L120 480 L116 432 L114 380 L112 310Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
-      <ellipse cx="126" cy="445" rx="9" ry="20" fill="none" stroke="#C08060" strokeWidth="0.6" strokeDasharray="2,2" opacity="0.6"/>
-      <path d="M114 388 Q124 384 134 388" fill="none" stroke="#C08060" strokeWidth="0.7" opacity="0.5"/>
-      <path d="M138 480 C145 486 150 495 146 502 C142 507 126 507 120 501 L120 480Z"
-        fill="url(#skinLeg)" stroke="#C08060" strokeWidth="0.8"/>
+      {/* GASTROCNEMIUS left - calf bulges */}
+      <path d="M 64 450 C 60 464 59 480 62 498 C 66 508 72 510 77 507 L 76 482 C 74 467 68 452 66 450 Z"
+        fill="#D05838" stroke="#7A2010" strokeWidth="0.5" opacity="0.75"/>
+      <path d="M 81 450 C 84 464 84 480 82 498 C 78 508 72 510 69 507 L 71 482 C 73 467 78 452 79 450 Z"
+        fill="#CC4A28" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+      <path d="M 68 456 C 66 472 66 488 68 502" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+
+      {/* GASTROCNEMIUS right */}
+      <path d="M 136 450 C 140 464 141 480 138 498 C 134 508 128 510 123 507 L 124 482 C 126 467 132 452 134 450 Z"
+        fill="#D05838" stroke="#7A2010" strokeWidth="0.5" opacity="0.75"/>
+      <path d="M 119 450 C 116 464 116 480 118 498 C 122 508 128 510 131 507 L 129 482 C 127 467 121 452 121 450 Z"
+        fill="#CC4A28" stroke="#7A2010" strokeWidth="0.5" opacity="0.65"/>
+      <path d="M 132 456 C 134 472 134 488 132 502" fill="none" stroke="#F09060" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+
+      {/* ACHILLES TENDON */}
+      <line x1="74" y1="505" x2="74" y2="520" stroke="#EDD0A0" strokeWidth="2.5" strokeLinecap="round" opacity="0.55"/>
+      <line x1="126" y1="505" x2="126" y2="520" stroke="#EDD0A0" strokeWidth="2.5" strokeLinecap="round" opacity="0.55"/>
+
+      {/* SOLEUS (below gastrocnemius, visible sides) */}
+      <path d="M 60 495 C 58 504 60 514 66 518" fill="none" stroke="#C84828" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+      <path d="M 140 495 C 142 504 140 514 134 518" fill="none" stroke="#C84828" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+
+      {/* ── HEAD (back) ── */}
+      <path d="M 100 7 C 76 7 59 23 59 45 C 59 63 69 77 82 83 L 84 92 L 116 92 L 118 83 C 131 77 141 63 141 45 C 141 23 124 7 100 7 Z"
+        fill="url(#gHead)" stroke="#8B4020" strokeWidth="0.9"/>
+      <ellipse cx="100" cy="24" rx="36" ry="20" fill="#1E0F08"/>
+      <path d="M 100 7 C 76 7 59 23 59 45 C 59 28 72 13 100 11 C 128 13 141 28 141 45 C 141 23 124 7 100 7 Z" fill="#1E0F08"/>
+      <ellipse cx="58" cy="49" rx="5" ry="8" fill="#D47848" stroke="#8B4020" strokeWidth="0.6"/>
+      <ellipse cx="142" cy="49" rx="5" ry="8" fill="#D47848" stroke="#8B4020" strokeWidth="0.6"/>
+      {/* Neck back */}
+      <path d="M 86 89 L 83 107 L 117 107 L 114 89 Z" fill="#D07848" stroke="#8B4020" strokeWidth="0.7"/>
+      <path d="M 100 91 L 100 107" stroke="#EDD0A0" strokeWidth="1.3" strokeDasharray="2.5,2" opacity="0.5"/>
 
       {/* ── INTERACTIVE HOTSPOTS (back) ── */}
-      <rect x="28" y="108" width="42" height="60" rx="7" {...ghs('leftShoulder')} onClick={() => onClick('leftShoulder')}/>
-      <rect x="130" y="108" width="42" height="60" rx="7" {...ghs('rightShoulder')} onClick={() => onClick('rightShoulder')}/>
-      <rect x="60" y="108" width="80" height="65" rx="7" {...ghs('upperBack')} onClick={() => onClick('upperBack')}/>
-      <rect x="65" y="170" width="70" height="62" rx="7" {...ghs('midBack')} onClick={() => onClick('midBack')}/>
-      <rect x="65" y="230" width="70" height="58" rx="7" {...ghs('lowerBack')} onClick={() => onClick('lowerBack')}/>
-      <rect x="50" y="282" width="100" height="42" rx="7" {...ghs('buttocks')} onClick={() => onClick('buttocks')}/>
-      <rect x="60" y="310" width="32" height="178" rx="12" {...ghs('leftBackLeg')} onClick={() => onClick('leftBackLeg')}/>
-      <rect x="108" y="310" width="32" height="178" rx="12" {...ghs('rightBackLeg')} onClick={() => onClick('rightBackLeg')}/>
+      <ellipse cx="100" cy="49" rx="43" ry="45" {...hs('headBack')} onClick={() => onClick('headBack')}/>
+      <rect x="56" y="106" width="88" height="70" rx="8" {...hs('trapezius')} onClick={() => onClick('trapezius')}/>
+      <rect x="22" y="108" width="44" height="70" rx="8" {...hs('leftShoulder')} onClick={() => onClick('leftShoulder')}/>
+      <rect x="134" y="108" width="44" height="70" rx="8" {...hs('rightShoulder')} onClick={() => onClick('rightShoulder')}/>
+      <rect x="66" y="174" width="68" height="74" rx="8" {...hs('midBack')} onClick={() => onClick('midBack')}/>
+      <rect x="68" y="246" width="64" height="50" rx="8" {...hs('lowerBack')} onClick={() => onClick('lowerBack')}/>
+      <rect x="50" y="292" width="100" height="44" rx="8" {...hs('buttocks')} onClick={() => onClick('buttocks')}/>
+      <rect x="4" y="138" width="38" height="158" rx="12" {...hs('leftShoulder')} onClick={() => onClick('leftShoulder')} style={{ pointerEvents: 'none' }}/>
+      <rect x="158" y="138" width="38" height="158" rx="12" {...hs('rightShoulder')} onClick={() => onClick('rightShoulder')} style={{ pointerEvents: 'none' }}/>
+      <rect x="58" y="312" width="36" height="118" rx="12" {...hs('leftBackLeg')} onClick={() => onClick('leftBackLeg')}/>
+      <rect x="106" y="312" width="36" height="118" rx="12" {...hs('rightBackLeg')} onClick={() => onClick('rightBackLeg')}/>
+      <rect x="56" y="428" width="34" height="72" rx="10" {...hs('leftBackLeg')} onClick={() => onClick('leftBackLeg')} style={{ pointerEvents: 'none' }}/>
+      <rect x="110" y="428" width="34" height="72" rx="10" {...hs('rightBackLeg')} onClick={() => onClick('rightBackLeg')} style={{ pointerEvents: 'none' }}/>
 
       {/* Labels */}
       {[
-        { key:'upperBack', x:100, y:136, t:'Upper Back' },
-        { key:'midBack', x:100, y:198, t:'Mid Back' },
-        { key:'lowerBack', x:100, y:258, t:'Lower Back' },
-        { key:'leftShoulder', x:42, y:136, t:'L.Shoulder' },
-        { key:'rightShoulder', x:158, y:136, t:'R.Shoulder' },
-        { key:'buttocks', x:100, y:302, t:'Hips' },
-        { key:'leftBackLeg', x:76, y:385, t:'L.Leg' },
-        { key:'rightBackLeg', x:124, y:385, t:'R.Leg' },
-      ].map(({ key, x, y, t }) => (
-        <text key={key} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-          fontSize="5.8" fontWeight="700" fill="#555" opacity="0.8"
-          style={{ pointerEvents: 'none', userSelect: 'none' }}>
+        { k:'headBack', x:100, y:14, t:'Head' },
+        { k:'trapezius', x:100, y:138, t:'Trapezius' },
+        { k:'midBack', x:100, y:210, t:'Mid Back' },
+        { k:'lowerBack', x:100, y:270, t:'Lower Back' },
+        { k:'leftShoulder', x:38, y:140, t:'Shoulder' },
+        { k:'rightShoulder', x:162, y:140, t:'Shoulder' },
+        { k:'buttocks', x:100, y:312, t:'Glutes' },
+        { k:'leftBackLeg', x:76, y:372, t:'Hamstring' },
+        { k:'rightBackLeg', x:124, y:372, t:'Hamstring' },
+      ].map(({ k, x, y, t }) => (
+        <text key={k} x={x} y={y} textAnchor="middle" fontSize="5.5" fontWeight="700"
+          fill="rgba(255,255,255,0.82)" style={{ pointerEvents: 'none', userSelect: 'none' }}>
           {t}
         </text>
       ))}
@@ -479,10 +666,8 @@ function BackBody({ ghs, onClick }) {
 }
 
 const card = {
-  background: '#fff',
-  border: '0.5px solid #e5e7eb',
-  borderRadius: '14px',
-  padding: '20px',
+  background: '#fff', border: '0.5px solid #e5e7eb',
+  borderRadius: '14px', padding: '20px',
   boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
 };
 const greenBtn = {
@@ -492,8 +677,7 @@ const greenBtn = {
   fontSize: '14px', fontWeight: '600', cursor: 'pointer',
 };
 const clearBtn = {
-  padding: '4px 12px',
-  background: '#fff0f0', color: '#cc0000',
+  padding: '4px 12px', background: '#fff0f0', color: '#cc0000',
   border: '1px solid #ffcccc', borderRadius: '6px',
   fontSize: '12px', cursor: 'pointer',
 };
