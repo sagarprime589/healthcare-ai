@@ -20,6 +20,14 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
+  profile: {
+    height: String,
+    weight: String,
+    bloodGroup: String,
+    existingConditions: String,
+    medications: String,
+    allergies: String,
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
@@ -139,6 +147,33 @@ app.post('/api/reset-password', async (req, res) => {
     res.json({ message: 'Password reset successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Reset failed' });
+  }
+});
+
+// ── Profile routes ───────────────────────────────────────
+
+app.get('/api/profile/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select('name email profile');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ name: user.name, email: user.email, profile: user.profile || {} });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+app.post('/api/profile/:userId', async (req, res) => {
+  const { height, weight, bloodGroup, existingConditions, medications, allergies } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.userId,
+      { profile: { height, weight, bloodGroup, existingConditions, medications, allergies } },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ message: 'Profile saved', profile: user.profile });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save profile' });
   }
 });
 

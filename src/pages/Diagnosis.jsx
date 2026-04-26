@@ -18,8 +18,30 @@ function Diagnosis() {
     bloodGroup: '', symptoms: '', duration: '',
     existingConditions: '', medications: '', allergies: '',
   });
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
+    const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    if (user && !user.isGuest) {
+      fetch(`${API}/api/profile/${user.id}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.profile) {
+            setForm(prev => ({
+              ...prev,
+              name: user.name || prev.name,
+              weight: data.profile.weight || prev.weight,
+              bloodGroup: data.profile.bloodGroup || prev.bloodGroup,
+              existingConditions: data.profile.existingConditions || prev.existingConditions,
+              medications: data.profile.medications || prev.medications,
+              allergies: data.profile.allergies || prev.allergies,
+            }));
+            setProfileLoaded(true);
+          }
+        })
+        .catch(() => {});
+    }
     if (location.state?.symptoms) {
       setForm(prev => ({ ...prev, symptoms: location.state.symptoms }));
     }
@@ -89,6 +111,11 @@ function Diagnosis() {
               <div style={{ background: 'linear-gradient(135deg, #0f6e56, #1d9e75)', padding: '20px 24px' }}>
                 <h2 style={{ margin: 0, color: '#fff', fontSize: '17px', fontWeight: '600' }}>Personal Information</h2>
                 <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.75)', fontSize: '13px' }}>Step 1 of 2 — Basic details</p>
+                {profileLoaded && (
+                  <div style={{ marginTop: '10px', background: 'rgba(255,255,255,0.15)', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: '#fff', display: 'inline-block' }}>
+                    ✓ Health profile auto-filled
+                  </div>
+                )}
               </div>
 
               <div style={{ padding: '24px' }}>

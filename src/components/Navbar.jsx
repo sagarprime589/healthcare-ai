@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -20,9 +20,20 @@ function Navbar() {
         <Link to="/dashboard" style={styles.link}>Dashboard</Link>
         <Link to="/history" style={styles.link}>History</Link>
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', opacity: 0.85 }}>Hi, {user.name.split(' ')[0]}</span>
-            <button onClick={logout} style={logoutBtn}>Logout</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {user.isGuest ? (
+              <span style={{ fontSize: '13px', opacity: 0.75 }}>👤 Guest</span>
+            ) : (
+              <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: '1.5px solid rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: '#fff' }}>
+                  {user.name?.[0]?.toUpperCase()}
+                </div>
+                <span style={{ fontSize: '13px', color: '#fff', opacity: 0.9 }}>{user.name.split(' ')[0]}</span>
+              </Link>
+            )}
+            <button onClick={logout} style={logoutBtn}>
+              {user.isGuest ? 'Sign In' : 'Logout'}
+            </button>
           </div>
         ) : (
           <Link to="/login" style={loginBtn}>Login</Link>
