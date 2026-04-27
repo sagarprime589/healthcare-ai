@@ -60,14 +60,14 @@ const popular = [
           placeholder="e.g. Paracetamol, Ibuprofen, Amoxicillin..."
           style={{ flex: 1, padding: '12px 16px', borderRadius: '10px', border: '1px solid #e5e7eb', fontSize: '14px', outline: 'none' }}
         />
-        <button onClick={handleSearch} disabled={loading} style={greenBtn}>
+        <button id="med-search-btn" onClick={handleSearch} disabled={loading} style={greenBtn}>
           {loading ? 'Searching...' : 'Search'}
         </button>
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
         {popular.map(med => (
-          <button key={med} onClick={() => { setQuery(med); }} style={pillBtn}>
+          <button key={med} onClick={() => { setQuery(med); setTimeout(() => document.getElementById('med-search-btn').click(), 0); }} style={pillBtn}>
             {med}
           </button>
         ))}
@@ -139,34 +139,37 @@ function InfoCard({ title, icon, content }) {
 }
 
 function parseMedicine(text) {
-  const sections = {
-    type: '',
-    uses: '',
-    dosage: '',
-    sideEffects: '',
-    precautions: '',
-    interactions: '',
-    storage: '',
-    alternatives: ''
-  };
-
+  const sections = { type: '', uses: '', dosage: '', sideEffects: '', precautions: '', interactions: '', storage: '', alternatives: '' };
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   let current = '';
 
+  const detectHeader = (line) => {
+    // Strip markdown symbols so "**TYPE:**" → "TYPE:"
+    const clean = line.replace(/\*\*/g, '').replace(/^#+\s*/, '').trim().toUpperCase();
+    if (/^(TYPE|DRUG TYPE|DRUG CLASS|CLASS|CATEGORY)/.test(clean)) return 'type';
+    if (/^(USES|USE|INDICATIONS|INDICATION)/.test(clean)) return 'uses';
+    if (/^(DOSAGE|DOSE|ADMINISTRATION|HOW TO TAKE|DIRECTIONS)/.test(clean)) return 'dosage';
+    if (/^(SIDE EFFECTS|SIDE EFFECT|ADVERSE|UNWANTED EFFECTS)/.test(clean)) return 'sideEffects';
+    if (/^(PRECAUTIONS|PRECAUTION|WARNINGS|WARNING|CONTRAINDICATIONS|WHO SHOULD NOT)/.test(clean)) return 'precautions';
+    if (/^(INTERACTIONS|INTERACTION|DRUG INTERACTIONS|AVOID WITH)/.test(clean)) return 'interactions';
+    if (/^(STORAGE|HOW TO STORE)/.test(clean)) return 'storage';
+    if (/^(ALTERNATIVES|ALTERNATIVE|SUBSTITUTES|SUBSTITUTE|GENERICS|BRAND NAMES|BRANDS)/.test(clean)) return 'alternatives';
+    return null;
+  };
+
   for (const line of lines) {
-    const up = line.toUpperCase();
-
-    if (up.includes('TYPE') || up.includes('CLASS') || up.includes('CATEGORY') || up.includes('DRUG CLASS')) { current = 'type'; continue; }
-    if (up.includes('USE') || up.includes('INDICATION') || up.includes('TREAT')) { current = 'uses'; continue; }
-    if (up.includes('DOSAGE') || up.includes('DOSE') || up.includes('ADMINISTRATION') || up.includes('HOW TO TAKE')) { current = 'dosage'; continue; }
-    if (up.includes('SIDE EFFECT') || up.includes('ADVERSE') || up.includes('UNWANTED')) { current = 'sideEffects'; continue; }
-    if (up.includes('PRECAUTION') || up.includes('WARNING') || up.includes('CONTRAINDICATION') || up.includes('WHO SHOULD NOT')) { current = 'precautions'; continue; }
-    if (up.includes('INTERACTION') || up.includes('DRUG INTERACTION') || up.includes('AVOID WITH')) { current = 'interactions'; continue; }
-    if (up.includes('STORAGE') || up.includes('STORE') || up.includes('KEEP')) { current = 'storage'; continue; }
-    if (up.includes('ALTERNATIVE') || up.includes('SIMILAR') || up.includes('SUBSTITUTE') || up.includes('GENERIC') || up.includes('BRAND')) { current = 'alternatives'; continue; }
-
-    if (current && line.length > 2) {
-      sections[current] += line + '\n';
+    const section = detectHeader(line);
+    if (section) {
+      current = section;
+      // Capture inline content after ":" on the same header line
+      const colonIdx = line.indexOf(':');
+      if (colonIdx !== -1 && colonIdx < line.length - 1) {
+        const inline = line.slice(colonIdx + 1).replace(/\*\*/g, '').trim();
+        if (inline.length > 2) sections[current] += inline + '\n';
+      }
+    } else if (current) {
+      const clean = line.replace(/\*\*/g, '').replace(/^\*\s/, '• ').trim();
+      if (clean.length > 1) sections[current] += clean + '\n';
     }
   }
 
