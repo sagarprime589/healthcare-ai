@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './pages/Profile';
 import VitalSigns from './pages/VitalSigns';
+import Appointments from './pages/Appointments';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/medicine" element={<ProtectedRoute><MedicineLookup /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/vitals" element={<ProtectedRoute><VitalSigns /></ProtectedRoute>} />
+        <Route path="/appointments" element={<ProtectedRoute><Appointments /></ProtectedRoute>} />
         <Route path="/test" element={<TestAPI />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

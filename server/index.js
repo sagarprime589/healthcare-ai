@@ -25,10 +25,39 @@ app.use('/api/medicine', aiLimiter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => { console.log('MongoDB connected'); seedDoctors(); })
   .catch(err => console.error('MongoDB error:', err));
 
-// User schema
+// ── Schemas ──────────────────────────────────────────────
+
+const doctorSchema = new mongoose.Schema({
+  name: String,
+  specialty: String,
+  location: String,
+  fees: Number,
+  experience: Number,
+  rating: Number,
+  availableDays: [String],
+  avatar: String,
+});
+const Doctor = mongoose.model('Doctor', doctorSchema);
+
+const appointmentSchema = new mongoose.Schema({
+  userId: String,
+  doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
+  doctorName: String,
+  specialty: String,
+  location: String,
+  fees: Number,
+  date: String,
+  slot: String,
+  patientName: String,
+  patientAge: String,
+  reason: String,
+  status: { type: String, enum: ['upcoming', 'completed', 'cancelled'], default: 'upcoming' },
+}, { timestamps: true });
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -42,8 +71,35 @@ const userSchema = new mongoose.Schema({
     allergies: String,
   },
 }, { timestamps: true });
-
 const User = mongoose.model('User', userSchema);
+
+// ── Seed doctors ─────────────────────────────────────────
+
+const TIME_SLOTS = [
+  '9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM',
+  '12:00 PM','12:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM',
+  '4:00 PM','4:30 PM','5:00 PM','5:30 PM',
+];
+
+async function seedDoctors() {
+  const count = await Doctor.countDocuments();
+  if (count > 0) return;
+  await Doctor.insertMany([
+    { name: 'Dr. Priya Sharma',   specialty: 'General Physician', location: 'Mumbai',    fees: 300, experience: 12, rating: 4.8, availableDays: ['Mon','Tue','Wed','Thu','Fri'],        avatar: 'PS' },
+    { name: 'Dr. Rajesh Kumar',   specialty: 'Cardiologist',      location: 'Delhi',     fees: 800, experience: 18, rating: 4.9, availableDays: ['Mon','Wed','Fri'],                   avatar: 'RK' },
+    { name: 'Dr. Anita Desai',    specialty: 'Dermatologist',     location: 'Pune',      fees: 500, experience: 10, rating: 4.7, availableDays: ['Tue','Wed','Thu','Sat'],             avatar: 'AD' },
+    { name: 'Dr. Suresh Patel',   specialty: 'Orthopedic',        location: 'Ahmedabad', fees: 600, experience: 15, rating: 4.6, availableDays: ['Mon','Tue','Thu','Fri'],             avatar: 'SP' },
+    { name: 'Dr. Meera Nair',     specialty: 'Gynecologist',      location: 'Bangalore', fees: 700, experience: 14, rating: 4.8, availableDays: ['Mon','Wed','Fri','Sat'],             avatar: 'MN' },
+    { name: 'Dr. Amit Joshi',     specialty: 'Pediatrician',      location: 'Chennai',   fees: 400, experience:  9, rating: 4.7, availableDays: ['Mon','Tue','Wed','Thu','Fri'],       avatar: 'AJ' },
+    { name: 'Dr. Kavitha Reddy',  specialty: 'Neurologist',       location: 'Hyderabad', fees: 900, experience: 20, rating: 4.9, availableDays: ['Tue','Thu','Sat'],                  avatar: 'KR' },
+    { name: 'Dr. Vikram Singh',   specialty: 'Psychiatrist',      location: 'Jaipur',    fees: 600, experience: 11, rating: 4.6, availableDays: ['Mon','Wed','Fri'],                   avatar: 'VS' },
+    { name: 'Dr. Sunita Gupta',   specialty: 'ENT Specialist',    location: 'Lucknow',   fees: 450, experience: 13, rating: 4.7, availableDays: ['Tue','Wed','Thu','Fri'],             avatar: 'SG' },
+    { name: 'Dr. Rahul Mehta',    specialty: 'Ophthalmologist',   location: 'Surat',     fees: 500, experience:  8, rating: 4.5, availableDays: ['Mon','Tue','Thu','Sat'],             avatar: 'RM' },
+    { name: 'Dr. Pooja Iyer',     specialty: 'Endocrinologist',   location: 'Kochi',     fees: 700, experience: 16, rating: 4.8, availableDays: ['Mon','Wed','Thu','Fri'],             avatar: 'PI' },
+    { name: 'Dr. Arun Verma',     specialty: 'General Physician', location: 'Nagpur',    fees: 250, experience:  7, rating: 4.4, availableDays: ['Mon','Tue','Wed','Thu','Fri','Sat'], avatar: 'AV' },
+  ]);
+  console.log('Doctors seeded');
+}
 
 // OTP store (in-memory is fine — OTPs are short-lived)
 const otpStore = {};
@@ -207,6 +263,68 @@ app.post('/api/profile/:userId', async (req, res) => {
     res.json({ message: 'Profile saved', profile: user.profile });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save profile' });
+  }
+});
+
+// ── Appointment routes ───────────────────────────────────
+
+app.get('/api/doctors', async (req, res) => {
+  try {
+    const doctors = await Doctor.find().sort({ rating: -1 });
+    res.json(doctors);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch doctors' });
+  }
+});
+
+app.get('/api/doctors/:id/slots', async (req, res) => {
+  const { date } = req.query;
+  if (!date) return res.status(400).json({ error: 'Date is required' });
+  try {
+    const booked = await Appointment.find({ doctorId: req.params.id, date, status: { $ne: 'cancelled' } }).select('slot');
+    const bookedSlots = booked.map(a => a.slot);
+    const available = TIME_SLOTS.filter(s => !bookedSlots.includes(s));
+    res.json({ available });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch slots' });
+  }
+});
+
+app.post('/api/appointments', async (req, res) => {
+  const { userId, doctorId, date, slot, patientName, patientAge, reason } = req.body;
+  if (!userId || !doctorId || !date || !slot || !patientName)
+    return res.status(400).json({ error: 'Missing required fields' });
+  try {
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) return res.status(404).json({ error: 'Doctor not found' });
+    const existing = await Appointment.findOne({ doctorId, date, slot, status: { $ne: 'cancelled' } });
+    if (existing) return res.status(409).json({ error: 'This slot is already booked. Please choose another.' });
+    const appt = await Appointment.create({
+      userId, doctorId, date, slot, patientName, patientAge, reason,
+      doctorName: doctor.name, specialty: doctor.specialty, location: doctor.location, fees: doctor.fees,
+    });
+    res.json({ appointment: appt });
+  } catch (err) {
+    res.status(500).json({ error: 'Booking failed' });
+  }
+});
+
+app.get('/api/appointments/:userId', async (req, res) => {
+  try {
+    const appts = await Appointment.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.json(appts);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch appointments' });
+  }
+});
+
+app.patch('/api/appointments/:id/cancel', async (req, res) => {
+  try {
+    const appt = await Appointment.findByIdAndUpdate(req.params.id, { status: 'cancelled' }, { new: true });
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
+    res.json({ message: 'Appointment cancelled', appointment: appt });
+  } catch (err) {
+    res.status(500).json({ error: 'Cancellation failed' });
   }
 });
 

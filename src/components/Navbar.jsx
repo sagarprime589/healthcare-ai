@@ -21,6 +21,7 @@ function Navbar() {
     { to: '/bodymap', label: 'Body Map' },
     { to: '/medicine', label: 'Medicine' },
     { to: '/vitals', label: 'Vitals' },
+    { to: '/appointments', label: 'Appointments' },
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/history', label: 'History' },
   ];
