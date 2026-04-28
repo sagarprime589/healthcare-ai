@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -31,11 +32,12 @@ const avatarColors = ['#0f6e56', '#1d7a8a', '#7c3aed', '#db2777', '#b45309', '#0
 
 export default function Appointments() {
   const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
+  const location = useLocation();
   const [tab, setTab] = useState('book');
 
   // Book tab state
   const [doctors, setDoctors] = useState([]);
-  const [specialty, setSpecialty] = useState('All');
+  const [specialty, setSpecialty] = useState(location.state?.specialty || 'All');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedDate, setSelectedDate] = useState(getNext7Days()[0].value);
   const [availableSlots, setAvailableSlots] = useState([]);

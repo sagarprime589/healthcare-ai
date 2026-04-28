@@ -73,6 +73,22 @@ export default function Dashboard() {
   const data = parseResult(aiResult);
   const urgency = urgencyConfig(data.urgencyLevel);
 
+  const detectSpecialty = (conditions) => {
+    const text = conditions.join(' ').toLowerCase();
+    if (/heart|cardiac|chest pain|angina|hypertension|palpitation/.test(text)) return 'Cardiologist';
+    if (/skin|rash|acne|eczema|dermatitis|fungal/.test(text)) return 'Dermatologist';
+    if (/bone|joint|fracture|arthritis|ortho|back pain|spine/.test(text)) return 'Orthopedic';
+    if (/neuro|brain|migraine|epilepsy|seizure|stroke/.test(text)) return 'Neurologist';
+    if (/mental|anxiety|depression|stress|psychiatric|insomnia/.test(text)) return 'Psychiatrist';
+    if (/ear|nose|throat|ent|sinusitis|tonsil|hearing/.test(text)) return 'ENT Specialist';
+    if (/eye|vision|conjunctivitis|cataract|retina/.test(text)) return 'Ophthalmologist';
+    if (/diabetes|thyroid|hormonal|endocrine|pcod|pcos/.test(text)) return 'Endocrinologist';
+    if (/gynec|pregnancy|menstrual|uterus|ovarian/.test(text)) return 'Gynecologist';
+    if (/child|infant|pediatric|baby|neonatal/.test(text)) return 'Pediatrician';
+    return 'General Physician';
+  };
+  const specialty = detectSpecialty(data.conditions);
+
   const shareOnWhatsApp = () => {
     const top3 = data.conditions.slice(0, 3).map((c, i) => {
       const parts = c.split(' - ');
@@ -178,14 +194,20 @@ export default function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {data.medicines.map((m, i) => {
                 const parts = m.split(' - ');
+                const medName = parts[0];
                 return (
-                  <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '10px 12px', background: '#f0fdf8', borderRadius: '10px', border: '1px solid #d1fae5' }}>
+                  <div key={i} onClick={() => navigate('/medicine', { state: { medicine: medName } })}
+                    style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '10px 12px', background: '#f0fdf8', borderRadius: '10px', border: '1px solid #d1fae5', cursor: 'pointer', transition: 'background 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#dcfce7'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#f0fdf8'}
+                  >
                     <div style={{ width: '28px', height: '28px', background: '#10b981', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', flexShrink: 0 }}>💊</div>
-                    <div>
-                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111' }}>{parts[0]}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#0f6e56', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{medName}</div>
                       {parts[1] && <div style={{ fontSize: '11px', color: '#059669', marginTop: '2px' }}>{parts[1]}</div>}
                       {parts[2] && <div style={{ fontSize: '11px', color: '#888', marginTop: '1px' }}>{parts[2]}</div>}
                     </div>
+                    <div style={{ fontSize: '10px', color: '#059669', opacity: 0.7, alignSelf: 'center', flexShrink: 0 }}>tap to look up →</div>
                   </div>
                 );
               })}
@@ -252,6 +274,20 @@ export default function Dashboard() {
           </div>
           <button onClick={() => navigate('/chat')} style={{ padding: '12px 24px', background: '#fff', color: '#0f6e56', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
             💬 Chat with AI Doctor →
+          </button>
+        </div>
+
+        {/* BOOK A DOCTOR */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '20px 24px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ width: '46px', height: '46px', background: '#e1f5ee', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>📅</div>
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '15px', color: '#111', marginBottom: '3px' }}>Want to see a real doctor?</div>
+              <div style={{ fontSize: '13px', color: '#666' }}>Based on your diagnosis, we recommend a <strong style={{ color: '#0f6e56' }}>{specialty}</strong></div>
+            </div>
+          </div>
+          <button onClick={() => navigate('/appointments', { state: { specialty } })} style={{ padding: '11px 22px', background: '#0f6e56', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            Book Appointment →
           </button>
         </div>
 

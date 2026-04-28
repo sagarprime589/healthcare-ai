@@ -13,7 +13,9 @@ export default function Chat() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      text: `Hello ${patientData?.name || 'there'}! I'm your AI doctor. I've reviewed your assessment. You can ask me anything about your symptoms, medicines, or diagnosis.`,
+      text: patientData
+        ? `Hello ${patientData.name}! I'm your AI doctor. I've reviewed your assessment. Ask me anything about your symptoms, medicines, or diagnosis.`
+        : `Hello! I'm your AI doctor. Ask me anything — symptoms, medicines, health tips, or any health concern you have.`,
     },
   ]);
   const [input, setInput] = useState('');
@@ -33,7 +35,9 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const context = `You are an AI doctor assistant. The patient's name is ${patientData?.name}, age ${patientData?.age}, gender ${patientData?.gender}. Their symptoms are: ${patientData?.symptoms}. Their previous AI assessment result was: ${aiResult}. Now answer the patient's follow-up question in a friendly, clear, and helpful way. Keep responses concise.`;
+      const context = patientData
+        ? `You are an AI doctor assistant. The patient's name is ${patientData.name}, age ${patientData.age}, gender ${patientData.gender}. Their symptoms are: ${patientData.symptoms}. Their previous AI assessment result was: ${aiResult}. Answer follow-up questions in a friendly, clear, and helpful way. Keep responses concise.`
+        : `You are a friendly AI doctor assistant for HealthAI. Answer general health questions clearly and helpfully. Always recommend consulting a real doctor for serious concerns. Keep responses concise.`;
 
       const history = updatedMessages.map(m => ({
         role: m.role === 'assistant' ? 'assistant' : 'user',
@@ -65,18 +69,6 @@ export default function Chat() {
       sendMessage();
     }
   };
-
-  if (!patientData) {
-    return (
-      <div style={{ textAlign: 'center', marginTop: '80px' }}>
-        <h2>No diagnosis found</h2>
-        <p style={{ color: '#666', marginBottom: '24px' }}>Please complete a diagnosis first.</p>
-        <button onClick={() => navigate('/diagnosis')} style={greenBtn}>
-          Go to Diagnosis
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div style={{ maxWidth: '700px', margin: '0 auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 60px)' }}>

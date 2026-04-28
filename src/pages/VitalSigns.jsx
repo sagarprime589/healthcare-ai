@@ -3,6 +3,44 @@ import { useNavigate } from 'react-router-dom';
 
 const VITALS_KEY = 'healthai_vitals';
 
+function getVitalStatus(key, value) {
+  if (!value) return null;
+  if (key === 'bp') {
+    const parts = value.split('/');
+    if (parts.length !== 2) return null;
+    const sys = parseFloat(parts[0]), dia = parseFloat(parts[1]);
+    if (isNaN(sys) || isNaN(dia)) return null;
+    if (sys < 120 && dia < 80) return { label: '✓ Normal', color: '#065f46', bg: '#d1fae5' };
+    if (sys < 130 && dia < 80) return { label: '⚠ Elevated', color: '#92400e', bg: '#fef3c7' };
+    return { label: '⚠ High', color: '#7f1d1d', bg: '#fee2e2' };
+  }
+  const v = parseFloat(value);
+  if (isNaN(v)) return null;
+  if (key === 'sugar') {
+    if (v < 70)  return { label: '⚠ Low', color: '#1e40af', bg: '#dbeafe' };
+    if (v <= 99) return { label: '✓ Normal', color: '#065f46', bg: '#d1fae5' };
+    if (v <= 125) return { label: '⚠ Pre-diabetic', color: '#92400e', bg: '#fef3c7' };
+    return { label: '⚠ High', color: '#7f1d1d', bg: '#fee2e2' };
+  }
+  if (key === 'heart') {
+    if (v < 60)  return { label: '⚠ Low', color: '#1e40af', bg: '#dbeafe' };
+    if (v <= 100) return { label: '✓ Normal', color: '#065f46', bg: '#d1fae5' };
+    return { label: '⚠ High', color: '#7f1d1d', bg: '#fee2e2' };
+  }
+  if (key === 'oxygen') {
+    if (v >= 95) return { label: '✓ Normal', color: '#065f46', bg: '#d1fae5' };
+    if (v >= 90) return { label: '⚠ Low', color: '#92400e', bg: '#fef3c7' };
+    return { label: '⚠ Critical', color: '#7f1d1d', bg: '#fee2e2' };
+  }
+  if (key === 'temp') {
+    if (v < 97)    return { label: '⚠ Low', color: '#1e40af', bg: '#dbeafe' };
+    if (v <= 99)   return { label: '✓ Normal', color: '#065f46', bg: '#d1fae5' };
+    if (v <= 100.4) return { label: '⚠ Low Fever', color: '#92400e', bg: '#fef3c7' };
+    return { label: '⚠ Fever', color: '#7f1d1d', bg: '#fee2e2' };
+  }
+  return null;
+}
+
 const VITAL_CONFIG = [
   { key: 'bp',      label: 'Blood Pressure', unit: 'mmHg',  icon: '🫀', placeholder: 'e.g. 120/80', color: '#ef4444', bg: '#fff1f2',
     ranges: [{ label: 'Normal', range: '< 120/80', color: '#10b981' }, { label: 'Elevated', range: '120-129/<80', color: '#f59e0b' }, { label: 'High', range: '≥ 130/80', color: '#ef4444' }] },
@@ -111,19 +149,27 @@ export default function VitalSigns() {
                 </div>
               )}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: '14px', marginBottom: '16px' }}>
-                {VITAL_CONFIG.map(v => (
-                  <div key={v.key}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', color: '#444', marginBottom: '6px' }}>
-                      <span>{v.icon}</span>{v.label} <span style={{ color: '#aaa', fontWeight: '400' }}>({v.unit})</span>
-                    </label>
-                    <input
-                      value={form[v.key]}
-                      onChange={e => setForm(f => ({ ...f, [v.key]: e.target.value }))}
-                      placeholder={v.placeholder}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: `1px solid #e5e7eb`, fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
-                    />
-                  </div>
-                ))}
+                {VITAL_CONFIG.map(v => {
+                  const status = getVitalStatus(v.key, form[v.key]);
+                  return (
+                    <div key={v.key}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600', color: '#444', marginBottom: '6px' }}>
+                        <span>{v.icon}</span>{v.label} <span style={{ color: '#aaa', fontWeight: '400' }}>({v.unit})</span>
+                      </label>
+                      <input
+                        value={form[v.key]}
+                        onChange={e => setForm(f => ({ ...f, [v.key]: e.target.value }))}
+                        placeholder={v.placeholder}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: `1px solid ${status ? (status.label.includes('Normal') ? '#10b981' : '#f59e0b') : '#e5e7eb'}`, fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.2s' }}
+                      />
+                      {status && (
+                        <span style={{ display: 'inline-block', marginTop: '4px', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', background: status.bg, color: status.color }}>
+                          {status.label}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#444', marginBottom: '6px' }}>📝 Note (optional)</label>

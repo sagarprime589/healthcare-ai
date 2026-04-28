@@ -1,26 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLang } from '../context/LanguageContext';
 
 export default function MedicineLookup() {
   const { lang } = useLang();
+  const location = useLocation();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async () => {
-    if (!query.trim()) return;
+  const doSearch = async (searchQuery) => {
+    if (!searchQuery?.trim()) return;
     setLoading(true);
     setError('');
     setResult(null);
-
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/medicine`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ medicine: query, lang }),
+        body: JSON.stringify({ medicine: searchQuery, lang }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed');
       setResult(data.result);
@@ -30,6 +30,15 @@ export default function MedicineLookup() {
       setLoading(false);
     }
   };
+
+  const handleSearch = () => doSearch(query);
+
+  useEffect(() => {
+    if (location.state?.medicine) {
+      setQuery(location.state.medicine);
+      doSearch(location.state.medicine);
+    }
+  }, []);
 
   const handleKey = (e) => {
     if (e.key === 'Enter') handleSearch();
