@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import Home from './pages/Home';
 import Diagnosis from './pages/Diagnosis';
@@ -16,11 +16,14 @@ import Profile from './pages/Profile';
 import VitalSigns from './pages/VitalSigns';
 import Appointments from './pages/Appointments';
 import NotFound from './pages/NotFound';
+import RockyChat from './components/RockyChat';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const hideRocky = ['/login', '/register'].includes(location.pathname);
+
   return (
-    <LanguageProvider>
-    <BrowserRouter>
+    <>
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -38,7 +41,17 @@ function App() {
         <Route path="/test" element={<TestAPI />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+      {!hideRocky && <RockyChat />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </LanguageProvider>
   );
 }
