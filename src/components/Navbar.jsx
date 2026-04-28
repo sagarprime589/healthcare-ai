@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLang } from '../context/LanguageContext';
+import { usePatient } from '../context/PatientContext';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -8,9 +9,12 @@ function Navbar() {
   const user = JSON.parse(localStorage.getItem('healthai_user') || 'null');
   const [menuOpen, setMenuOpen] = useState(false);
   const { lang, toggleLang } = useLang();
+  const { setPatientData, setAiResult } = usePatient();
 
   const logout = () => {
     localStorage.removeItem('healthai_user');
+    setPatientData(null);
+    setAiResult(null);
     navigate('/login');
     setMenuOpen(false);
   };
