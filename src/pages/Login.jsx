@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { usePatient } from '../context/PatientContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { setPatientData, setAiResult } = usePatient();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,6 +33,8 @@ export default function Login() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Login failed');
       localStorage.setItem('healthai_user', JSON.stringify(data.user));
+      setPatientData(null);
+      setAiResult(null);
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -42,6 +46,8 @@ export default function Login() {
   const handleGuestLogin = () => {
     const guest = { id: 'guest_' + Date.now(), name: 'Guest User', email: '', isGuest: true };
     localStorage.setItem('healthai_user', JSON.stringify(guest));
+    setPatientData(null);
+    setAiResult(null);
     navigate('/');
   };
 

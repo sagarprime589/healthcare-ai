@@ -143,7 +143,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── CARDS PULLED UP ── */}
-      <div style={{ maxWidth: '900px', margin: '-52px auto 0', padding: '0 20px' }}>
+      <div style={{ maxWidth: '900px', margin: '-52px auto 0', padding: '0 20px', position: 'relative', zIndex: 1 }}>
 
         {/* URGENCY BANNER */}
         <div style={{ background: urgency.bg, border: `1.5px solid ${urgency.border}`, borderRadius: '16px', padding: '20px 24px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '18px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
