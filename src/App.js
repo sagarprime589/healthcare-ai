@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { LanguageProvider } from './context/LanguageContext';
 import Home from './pages/Home';
 import Diagnosis from './pages/Diagnosis';
@@ -51,6 +52,7 @@ function App() {
     <LanguageProvider>
       <BrowserRouter>
         <AppContent />
+        <Analytics />
       </BrowserRouter>
     </LanguageProvider>
   );
