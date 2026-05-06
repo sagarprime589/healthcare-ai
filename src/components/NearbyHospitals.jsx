@@ -21,47 +21,79 @@ export default function NearbyHospitals({ urgencyLevel }) {
 
   const isUrgent = ['high', 'critical'].includes(urgencyLevel?.toLowerCase());
 
-  const findHospitals = () => {
-    if (!navigator.geolocation) {
-      setStatus('error');
-      return;
+  const fetchFromOverpass = async (lat, lon, endpoint) => {
+    const query =
+      `[out:json][timeout:25];` +
+      `(` +
+      `node["amenity"="hospital"](around:10000,${lat},${lon});` +
+      `node["amenity"="clinic"](around:10000,${lat},${lon});` +
+      `node["amenity"="doctors"](around:10000,${lat},${lon});` +
+      `node["amenity"="pharmacy"](around:10000,${lat},${lon});` +
+      `way["amenity"="hospital"](around:10000,${lat},${lon});` +
+      `way["amenity"="clinic"](around:10000,${lat},${lon});` +
+      `);out center;`;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(`${endpoint}?data=${encodeURIComponent(query)}`, {
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error('Bad response');
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
     }
+  };
+
+  const findHospitals = () => {
+    if (!navigator.geolocation) { setStatus('error'); return; }
     setStatus('loading');
     navigator.geolocation.getCurrentPosition(
       async ({ coords: pos }) => {
         const { latitude: lat, longitude: lon } = pos;
         setCoords({ lat, lon });
-        try {
-          const query =
-            `[out:json][timeout:20];` +
-            `(node["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](around:5000,${lat},${lon});` +
-            `way["amenity"~"^(hospital|clinic)$"](around:5000,${lat},${lon}););` +
-            `out center;`;
-          const res = await fetch(
-            `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
-          );
-          const json = await res.json();
-          const results = json.elements
-            .map(el => ({
-              id: el.id,
-              name: el.tags?.name || el.tags?.['name:en'] || '',
-              type: el.tags?.amenity || 'hospital',
-              lat: el.lat ?? el.center?.lat,
-              lon: el.lon ?? el.center?.lon,
-              phone: el.tags?.phone || el.tags?.['contact:phone'] || null,
-            }))
-            .filter(h => h.name && h.lat && h.lon)
-            .map(h => ({ ...h, distance: haversine(lat, lon, h.lat, h.lon) }))
-            .sort((a, b) => a.distance - b.distance)
-            .slice(0, 8);
-          setHospitals(results);
-          setStatus('done');
-        } catch {
-          setStatus('error');
+
+        const ENDPOINTS = [
+          'https://overpass-api.de/api/interpreter',
+          'https://overpass.kumi.systems/api/interpreter',
+          'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+        ];
+
+        let json = null;
+        for (const ep of ENDPOINTS) {
+          try {
+            json = await fetchFromOverpass(lat, lon, ep);
+            break;
+          } catch {
+            // try next endpoint
+          }
         }
+
+        if (!json) { setStatus('error'); return; }
+
+        const results = json.elements
+          .map(el => ({
+            id: el.id,
+            name: el.tags?.name || el.tags?.['name:en'] || '',
+            type: el.tags?.amenity || 'hospital',
+            lat: el.lat ?? el.center?.lat,
+            lon: el.lon ?? el.center?.lon,
+            phone: el.tags?.phone || el.tags?.['contact:phone'] || null,
+          }))
+          .filter(h => h.name && h.lat && h.lon)
+          .map(h => ({ ...h, distance: haversine(lat, lon, h.lat, h.lon) }))
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 8);
+
+        setHospitals(results);
+        setStatus('done');
       },
-      () => setStatus('denied'),
-      { timeout: 10000 }
+      (err) => {
+        if (err.code === 1) setStatus('denied');
+        else setStatus('error');
+      },
+      { timeout: 12000, enableHighAccuracy: false }
     );
   };
 
@@ -88,7 +120,7 @@ export default function NearbyHospitals({ urgencyLevel }) {
             <div style={{ fontSize: '13px', color: '#666' }}>
               {isUrgent
                 ? 'Your urgency is high — locate the nearest medical facility immediately'
-                : 'Discover hospitals and clinics near your current location'}
+                : 'Click to search — location is only accessed when you press the button'}
             </div>
           </div>
         </div>
@@ -144,18 +176,41 @@ export default function NearbyHospitals({ urgencyLevel }) {
 
   /* ── ERROR ── */
   if (status === 'error') {
+    const gmapsUrl = coords
+      ? `https://www.google.com/maps/search/hospital+clinic+near+me/@${coords.lat},${coords.lon},14z`
+      : `https://www.google.com/maps/search/hospital+clinic+near+me`;
     return (
       <div style={{
         background: '#fff', border: '1px solid #e5e7eb', borderRadius: '16px',
-        padding: '20px 24px', marginBottom: '16px',
-        display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap',
+        padding: '20px 24px', marginBottom: '16px', boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
       }}>
-        <div style={{ fontSize: '28px' }}>⚠️</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: '600', color: '#111', marginBottom: '4px' }}>Could not fetch nearby facilities</div>
-          <div style={{ fontSize: '13px', color: '#666' }}>Check your internet connection and try again.</div>
+        <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '16px' }}>
+          <div style={{ fontSize: '28px' }}>⚠️</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: '600', color: '#111', marginBottom: '4px' }}>Map data could not load</div>
+            <div style={{ fontSize: '13px', color: '#666' }}>The map service is temporarily unavailable. Use Google Maps below to find hospitals near you.</div>
+          </div>
+          <button onClick={findHospitals} style={retryBtn}>Retry</button>
         </div>
-        <button onClick={findHospitals} style={retryBtn}>Retry</button>
+        <a
+          href={gmapsUrl}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            width: '100%', padding: '13px', boxSizing: 'border-box',
+            background: '#1a73e8', color: '#fff', borderRadius: '10px',
+            fontSize: '14px', fontWeight: '600', textDecoration: 'none',
+          }}
+        >
+          <img src="https://www.google.com/favicon.ico" alt="" width="16" height="16" style={{ borderRadius: '2px' }} />
+          Search Hospitals on Google Maps
+        </a>
+        {isUrgent && (
+          <a href="tel:108" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px', padding: '11px', background: '#ef4444', color: '#fff', borderRadius: '10px', fontSize: '14px', fontWeight: '700', textDecoration: 'none' }}>
+            🚨 Emergency — Call 108
+          </a>
+        )}
       </div>
     );
   }
@@ -178,7 +233,7 @@ export default function NearbyHospitals({ urgencyLevel }) {
             Nearby Hospitals &amp; Clinics
           </h3>
           <span style={{ background: '#e1f5ee', color: '#0f6e56', fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px' }}>
-            {hospitals.length} found
+            {hospitals.length} found within 10 km
           </span>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
