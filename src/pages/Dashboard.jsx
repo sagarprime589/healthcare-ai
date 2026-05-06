@@ -1,6 +1,7 @@
 import { generatePDF } from '../utils/generatePDF';
 import { usePatient } from '../context/PatientContext';
 import { useNavigate } from 'react-router-dom';
+import NearbyHospitals from '../components/NearbyHospitals';
 
 function parseResult(text) {
   const sections = { conditions: [], urgency: '', urgencyLevel: '', medicines: [], tests: [], remedies: [], seeDoctor: [], disclaimer: '' };
@@ -156,6 +157,9 @@ export default function Dashboard() {
             <div style={{ fontSize: '13px', color: urgency.color, opacity: 0.85, marginTop: '2px' }}>{data.urgency?.replace(/^[^-]+-\s*/, '')}</div>
           </div>
         </div>
+
+        {/* NEARBY HOSPITALS */}
+        <NearbyHospitals urgencyLevel={data.urgencyLevel} />
 
         {/* CONDITIONS */}
         <div style={sectionCard}>

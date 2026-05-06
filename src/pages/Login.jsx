@@ -17,6 +17,7 @@ export default function Login() {
   const [forgotError, setForgotError] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState('');
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -55,6 +56,7 @@ export default function Login() {
     e.preventDefault();
     setForgotLoading(true);
     setForgotError('');
+    setDevOtp('');
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/forgot-password`, {
         method: 'POST',
@@ -63,6 +65,7 @@ export default function Login() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      if (data.devOtp) setDevOtp(data.devOtp);
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message);
@@ -107,6 +110,7 @@ export default function Login() {
     setNewPassword('');
     setForgotError('');
     setForgotSuccess('');
+    setDevOtp('');
     setError('');
   };
 
@@ -206,9 +210,23 @@ export default function Login() {
               {forgotError && <div style={errorBox}>⚠ {forgotError}</div>}
               {forgotSuccess && <div style={successBox}>✓ {forgotSuccess}</div>}
 
-              <div style={{ background: '#e1f5ee', border: '1px solid #1d9e75', borderRadius: '10px', padding: '12px 14px', marginBottom: '20px', fontSize: '13px', color: '#0f6e56' }}>
-                📧 A 6-digit OTP has been sent to <strong>{forgotEmail}</strong>. Check your inbox (and spam folder).
-              </div>
+              {devOtp ? (
+                <div style={{ background: '#fefce8', border: '2px solid #f59e0b', borderRadius: '10px', padding: '14px 16px', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+                    Your OTP (email not configured)
+                  </div>
+                  <div style={{ fontSize: '32px', fontWeight: '700', letterSpacing: '10px', color: '#0f6e56', textAlign: 'center', padding: '8px 0' }}>
+                    {devOtp}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#92400e', textAlign: 'center', marginTop: '4px' }}>
+                    Copy this code and enter it below
+                  </div>
+                </div>
+              ) : (
+                <div style={{ background: '#e1f5ee', border: '1px solid #1d9e75', borderRadius: '10px', padding: '12px 14px', marginBottom: '20px', fontSize: '13px', color: '#0f6e56' }}>
+                  📧 A 6-digit OTP has been sent to <strong>{forgotEmail}</strong>. Check your inbox (and spam folder).
+                </div>
+              )}
 
               <form onSubmit={handleResetPassword}>
                 <div style={{ marginBottom: '16px' }}>

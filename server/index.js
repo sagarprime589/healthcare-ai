@@ -104,13 +104,18 @@ async function seedDoctors() {
 // OTP store (in-memory is fine — OTPs are short-lived)
 const otpStore = {};
 
-// Email transporter
+// Email transporter — only used when credentials are configured
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 8000,
+  greetingTimeout: 5000,
+  socketTimeout: 8000,
 });
 
 // ── Auth routes ──────────────────────────────────────────
@@ -166,6 +171,18 @@ app.post('/api/forgot-password', async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otpStore[email] = { otp, expires: Date.now() + 10 * 60 * 1000 };
 
+    const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+
+    if (!emailConfigured) {
+      // No email credentials — return OTP directly (dev/demo mode)
+      console.log(`\n[HealthAI OTP] ${email} → ${otp}\n`);
+      return res.json({ message: 'OTP generated', devOtp: otp });
+    }
+
+    // Respond immediately — don't block on email delivery
+    res.json({ message: 'OTP sent to your email' });
+
+    // Send email in background
     transporter.sendMail({
       from: `"HealthAI" <${process.env.EMAIL_USER}>`,
       to: email,
@@ -184,12 +201,9 @@ app.post('/api/forgot-password', async (req, res) => {
           </div>
         </div>
       `,
-    }, (err) => {
-      if (err) {
-        console.error('Mail error:', err);
-        return res.status(500).json({ error: 'Failed to send OTP email. Try again.' });
-      }
-      res.json({ message: 'OTP sent to your email' });
+    }).catch(err => {
+      console.error('[Mail error]', err.message);
+      console.log(`[HealthAI OTP fallback] ${email} → ${otp}`);
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
