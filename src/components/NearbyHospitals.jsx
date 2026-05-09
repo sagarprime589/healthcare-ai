@@ -174,7 +174,7 @@ export default function NearbyHospitals({ urgencyLevel }) {
     );
   }
 
-  /* ── ERROR ── */
+  /* ── ERROR ── silently fall back to Google Maps, no error text */
   if (status === 'error') {
     const gmapsUrl = coords
       ? `https://www.google.com/maps/search/hospital+clinic+near+me/@${coords.lat},${coords.lon},14z`
@@ -183,31 +183,41 @@ export default function NearbyHospitals({ urgencyLevel }) {
       <div style={{
         background: '#fff', border: '1px solid #e5e7eb', borderRadius: '16px',
         padding: '20px 24px', marginBottom: '16px', boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        flexWrap: 'wrap', gap: '16px',
       }}>
-        <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '16px' }}>
-          <div style={{ fontSize: '28px' }}>⚠️</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: '600', color: '#111', marginBottom: '4px' }}>Map data could not load</div>
-            <div style={{ fontSize: '13px', color: '#666' }}>The map service is temporarily unavailable. Use Google Maps below to find hospitals near you.</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{
+            width: '46px', height: '46px', flexShrink: 0, borderRadius: '12px',
+            background: '#e1f5ee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
+          }}>🏥</div>
+          <div>
+            <div style={{ fontWeight: '700', fontSize: '15px', color: '#111', marginBottom: '3px' }}>
+              Find Nearby Hospitals &amp; Clinics
+            </div>
+            <div style={{ fontSize: '13px', color: '#666' }}>
+              Open Google Maps to find the nearest medical facility
+            </div>
           </div>
-          <button onClick={findHospitals} style={retryBtn}>Retry</button>
         </div>
-        <a
-          href={gmapsUrl}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            width: '100%', padding: '13px', boxSizing: 'border-box',
-            background: '#1a73e8', color: '#fff', borderRadius: '10px',
-            fontSize: '14px', fontWeight: '600', textDecoration: 'none',
-          }}
-        >
-          <img src="https://www.google.com/favicon.ico" alt="" width="16" height="16" style={{ borderRadius: '2px' }} />
-          Search Hospitals on Google Maps
-        </a>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button onClick={findHospitals} style={retryBtn}>Try Again</button>
+          <a
+            href={gmapsUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              padding: '11px 22px', border: 'none', borderRadius: '10px',
+              fontSize: '14px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap',
+              background: '#1a73e8', color: '#fff', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+            }}
+          >
+            📍 Open Google Maps
+          </a>
+        </div>
         {isUrgent && (
-          <a href="tel:108" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px', padding: '11px', background: '#ef4444', color: '#fff', borderRadius: '10px', fontSize: '14px', fontWeight: '700', textDecoration: 'none' }}>
+          <a href="tel:108" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '11px', background: '#ef4444', color: '#fff', borderRadius: '10px', fontSize: '14px', fontWeight: '700', textDecoration: 'none' }}>
             🚨 Emergency — Call 108
           </a>
         )}
